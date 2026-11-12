@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edify — Nomination Chain MVP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#15172B; --ink2:#4A4D63; --ink3:#8A8C9E;
+    --bg:#F4EFE6; --card:#FFFFFF; --line:#E6E0D4;
+    --accent:#FF5A36; --accent-soft:#FFE7E0;
+    --gold:#F2B33D; --good:#1F9D6B; --good-soft:#DDF3EA;
+    --navy:#1E2246;
+    --r:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#E9E3D7;color:var(--ink);min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:24px 12px}
+  .wrap{display:flex;gap:32px;align-items:flex-start;max-width:980px;width:100%;justify-content:center}
+  .side{max-width:300px;padding-top:20px}
+  .side h1{font-family:'Fraunces',serif;font-size:34px;line-height:1.05;margin-bottom:12px}
+  .side p{color:var(--ink2);font-size:14px;line-height:1.55;margin-bottom:12px}
+  .side .steps{font-size:13px;color:var(--ink2);line-height:1.7;padding-left:18px}
+  .side .reset{margin-top:16px;font-size:13px;color:var(--accent);background:none;border:none;cursor:pointer;font-weight:600;font-family:inherit;padding:0}
+  @media (max-width:760px){.side{display:none}}
+
+  .phone{width:390px;max-width:100%;height:780px;background:var(--bg);border-radius:40px;box-shadow:0 0 0 10px #15172B,0 30px 60px rgba(21,23,43,.25);overflow:hidden;display:flex;flex-direction:column;position:relative}
+  .top{padding:18px 20px 10px;display:flex;align-items:center;justify-content:space-between}
+  .logo{font-family:'Fraunces',serif;font-size:24px;font-weight:700;letter-spacing:-.5px}
+  .logo span{color:var(--accent)}
+  .mode{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;border-radius:99px;background:var(--navy);color:#fff}
+  .screen{flex:1;overflow-y:auto;padding:4px 18px 24px}
+  .screen::-webkit-scrollbar{width:0}
+  .nav{display:flex;border-top:1px solid var(--line);background:#fff}
+  .nav button{flex:1;padding:12px 0 14px;background:none;border:none;font-family:inherit;font-size:11.5px;font-weight:600;color:var(--ink3);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+  .nav button.on{color:var(--ink)}
+  .nav svg{width:22px;height:22px}
+  .back{background:none;border:none;font-family:inherit;font-size:14px;font-weight:600;color:var(--ink2);cursor:pointer;margin:4px 0 12px;display:flex;align-items:center;gap:4px}
+
+  h2{font-family:'Fraunces',serif;font-size:26px;line-height:1.1;margin-bottom:6px}
+  h3{font-size:15px;font-weight:700;margin:18px 0 10px}
+  .sub{color:var(--ink2);font-size:14px;line-height:1.5;margin-bottom:16px}
+  .card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:12px;border:1px solid var(--line)}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px;border-radius:14px;border:none;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:transform .1s}
+  .btn:active{transform:scale(.98)}
+  .btn.primary{background:var(--accent);color:#fff}
+  .btn.dark{background:var(--ink);color:#fff}
+  .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .row{display:flex;align-items:center;gap:12px}
+  .av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex-shrink:0}
+  .av.sm{width:30px;height:30px;font-size:11px}
+  .name{font-weight:700;font-size:14.5px}
+  .meta{font-size:12.5px;color:var(--ink3)}
+  .pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:99px}
+  .pill.hot{background:var(--accent-soft);color:var(--accent)}
+  .pill.good{background:var(--good-soft);color:var(--good)}
+  .pill.lock{background:#EEEAF6;color:#5B4FA0}
+  .pill.wait{background:#FFF3D6;color:#A06D00}
+
+  .invite{background:var(--navy);color:#fff;border-radius:22px;padding:18px;margin-bottom:16px;cursor:pointer;position:relative;overflow:hidden}
+  .invite::after{content:"";position:absolute;right:-40px;top:-40px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(255,90,54,.55),transparent 70%)}
+  .invite .k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+  .invite .t{font-family:'Fraunces',serif;font-size:21px;line-height:1.15;margin:6px 0 10px}
+  .invite .cd{font-variant-numeric:tabular-nums;font-weight:700;font-size:13px;background:rgba(255,255,255,.12);display:inline-block;padding:5px 10px;border-radius:99px}
+
+  .video{border-radius:18px;aspect-ratio:9/12;position:relative;overflow:hidden;color:#fff;display:flex;flex-direction:column;justify-content:flex-end;padding:16px;margin-bottom:12px}
+  .video .play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .video .play span{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.22);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center}
+  .video .big-av{position:absolute;top:38%;left:50%;transform:translate(-50%,-50%);width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:40px;font-weight:700}
+  .video .cap{position:relative;font-size:15px;line-height:1.45;font-weight:600;text-shadow:0 1px 8px rgba(0,0,0,.35);min-height:66px}
+  .video .bar{position:relative;height:4px;background:rgba(255,255,255,.25);border-radius:4px;margin-top:10px;overflow:hidden}
+  .video .bar i{display:block;height:100%;width:0;background:#fff}
+  .video .who{position:absolute;top:14px;left:14px;font-size:12.5px;font-weight:700;background:rgba(0,0,0,.25);padding:5px 10px;border-radius:99px}
+  .wave{position:absolute;top:58%;left:50%;transform:translateX(-50%);display:flex;gap:4px;height:26px;align-items:center;opacity:0}
+  .wave.on{opacity:1}
+  .wave b{width:4px;background:#fff;border-radius:3px;animation:w 1s ease-in-out infinite}
+  @keyframes w{0%,100%{height:6px}50%{height:24px}}
+
+  .cam{background:#0E0F1C;border-radius:18px;aspect-ratio:9/11;position:relative;display:flex;align-items:center;justify-content:center;color:#8A8C9E;font-size:13px;overflow:hidden;margin-bottom:12px}
+  .cam video{width:100%;height:100%;object-fit:cover}
+  .rec{position:absolute;top:14px;left:14px;display:flex;align-items:center;gap:6px;color:#fff;font-weight:700;font-size:13px;font-variant-numeric:tabular-nums}
+  .rec i{width:10px;height:10px;border-radius:50%;background:#FF3B30;animation:blink 1s infinite}
+  @keyframes blink{50%{opacity:.2}}
+  .cam .q{position:absolute;bottom:16px;left:16px;right:16px;color:#fff;font-size:14px;line-height:1.4;font-weight:600}
+  .ring{position:absolute;bottom:14px;right:14px}
+  textarea,input,select{width:100%;font-family:inherit;font-size:14px;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);resize:none}
+  textarea:focus,input:focus,select:focus{outline:none;border-color:var(--ink)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 14px}
+  .chip{font-size:12.5px;font-weight:600;padding:7px 11px;border-radius:99px;background:#fff;border:1.5px solid var(--line);cursor:pointer;color:var(--ink2);font-family:inherit}
+  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .ceo-pick{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:6px}
+  .ceo-pick::-webkit-scrollbar{height:0}
+  .ceo-opt{flex-shrink:0;width:96px;border:1.5px solid var(--line);border-radius:14px;padding:10px 8px;text-align:center;background:#fff;cursor:pointer;font-family:inherit}
+  .ceo-opt.on{border-color:var(--accent);background:var(--accent-soft)}
+  .ceo-opt .av{margin:0 auto 6px}
+  .ceo-opt div{font-size:11.5px;font-weight:700;line-height:1.2}
+  .small{font-size:12px;color:var(--ink3);line-height:1.5}
+
+  .steps-v{position:relative;padding-left:26px;margin:8px 0 18px}
+  .steps-v::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:var(--line)}
+  .sv{position:relative;margin-bottom:18px}
+  .sv::before{content:"";position:absolute;left:-23px;top:3px;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--line)}
+  .sv.done::before{background:var(--good);border-color:var(--good)}
+  .sv.now::before{background:var(--gold);border-color:var(--gold);box-shadow:0 0 0 5px rgba(242,179,61,.25)}
+  .sv b{font-size:14px;display:block}
+  .sv span{font-size:12.5px;color:var(--ink3)}
+
+  .chain{position:relative;padding-left:4px}
+  .node{display:flex;gap:12px;position:relative;padding-bottom:18px}
+  .node:not(:last-child)::before{content:"";position:absolute;left:20px;top:44px;bottom:0;width:2px;background:var(--line)}
+  .node.me .av{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--accent)}
+  .node .body{flex:1;padding-top:2px}
+  .node .q{font-size:13px;color:var(--ink2);margin-top:4px;line-height:1.4}
+  .split{display:flex;gap:10px;margin-left:52px;margin-top:-6px;padding-bottom:16px}
+  .split .mini{flex:1;background:#fff;border:1.5px dashed var(--line);border-radius:14px;padding:10px}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 10px;text-align:center}
+  .stat b{font-family:'Fraunces',serif;font-size:22px;display:block}
+  .stat span{font-size:11px;color:var(--ink3);font-weight:600}
+  .lib{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .tile{border-radius:16px;aspect-ratio:3/4;position:relative;overflow:hidden;color:#fff;padding:12px;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer}
+  .tile .tq{font-size:12.5px;font-weight:700;line-height:1.3}
+  .tile .tm{font-size:11px;opacity:.85;margin-top:4px}
+  .tile .ti{position:absolute;top:10px;left:10px}
+  .toast{position:absolute;left:50%;bottom:86px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 16px;border-radius:12px;font-size:13px;font-weight:600;opacity:0;transition:.25s;pointer-events:none;white-space:nowrap;z-index:5}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  .confetti{text-align:center;padding:10px 0 4px}
+  .confetti .big{font-family:'Fraunces',serif;font-size:56px;line-height:1;color:var(--accent)}
+  .unlock{background:linear-gradient(135deg,#FFE7E0,#FFF3D6);border:1.5px solid #FFD4C7;border-radius:var(--r);padding:16px;margin:4px 0 14px}
+  .slot{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:12px}
+  .slot .lbl{font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+  .slot input,.slot select{margin-bottom:8px}
+  .demo{font-size:12px;font-weight:700;color:var(--ink3);text-align:center;margin:10px 0;letter-spacing:.04em;text-transform:uppercase}
+  .inbox-item{display:flex;gap:12px;align-items:flex-start}
+  .inbox-item .body{flex:1}
+  .divider{height:1px;background:var(--line);margin:12px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="side">
+    <h1>Edify<br>Nomination Chain</h1>
+    <p>A clickable MVP of the go-to-market loop: get answered by a CEO, then pick who asks next.</p>
+    <ol class="steps">
+      <li>Open the invite from Sarah</li>
+      <li>Record your question (or upload a video)</li>
+      <li>Flip to <b>CEO mode</b> and answer it, or fast-forward</li>
+      <li>Watch your answer, share it</li>
+      <li>Nominate 2 people and see the chain grow</li>
+    </ol>
+    <button class="reset" data-action="reset">↺ Reset demo</button>
+  </div>
+
+  <div class="phone">
+    <div class="top">
+      <div class="logo">edify<span>.</span></div>
+      <div class="mode" id="modeBadge">Student</div>
+    </div>
+    <div class="screen" id="screen"></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="toast" id="toast"></div>
+  </div>
+</div>
+
+<script>
+const H = 3600*1000;
+const CEOS = {
+  maya:   {name:'Maya Okafor',    title:'CEO, Lumen Freight',          color:'#E8553A', grad:'linear-gradient(160deg,#FF7A52,#B8322A)'},
+  daniel: {name:'Daniel Reyes',   title:'Founder, Brightside Coffee',  color:'#2E7D5B', grad:'linear-gradient(160deg,#3FAF82,#1D5A41)'},
+  priya:  {name:'Priya Natarajan',title:'CEO, Fieldnote Studio',       color:'#5B4FA0', grad:'linear-gradient(160deg,#8A7BE0,#3D3378)'},
+  marcus: {name:'Marcus Lee',     title:'Founder, Ridgeway Robotics',  color:'#1E5FA8', grad:'linear-gradient(160deg,#4C8EDB,#173F72)'},
+};
+const PROMPTS = [
+  'What would you do differently at 20?',
+  'How did you get your first customer?',
+  'What skill should I build in college?',
+  'What made you almost quit?',
+];
+const ANSWERS = {
+  maya:'Honestly? Start before you feel ready. My first customer came from a cold email I almost didn’t send. Send the email.',
+  daniel:'Work behind the counter of the business you want to build. I learned more in six months pulling shots than in any class.',
+  priya:'Learn to write clearly. Every pitch, every hire, every investor update is just writing. It compounds.',
+  marcus:'Pick problems you’d still care about in ten years. The hard part isn’t starting; it’s staying.',
+};
+const LIBRARY = [
+  {ceo:'daniel', asker:'Jordan M.', school:'Babson', q:'How did you price your first bag of coffee?', views:'2.1k'},
+  {ceo:'priya',  asker:'Lena O.',   school:'Wellesley', q:'What do you look for in a first hire?', views:'1.4k'},
+  {ceo:'marcus', asker:'Theo R.',   school:'Olin', q:'How do you know when to pivot?', views:'980'},
+  {ceo:'maya',   asker:'Sarah Kim', school:'Babson', q:'How did you land Lumen’s first big client?', views:'3.3k'},
+];
+
+let S;
+function fresh(){
+  return {
+    tab:'watch', screen:'home', mode:'student',
+    invite:{from:'Sarah Kim', school:'Babson ’28', note:'You always ask the best questions in class. Your turn.', ceo:'maya', expires:Date.now()+47*H+59*60000},
+    q:{ceo:'maya', text:'', video:null, status:'none', answer:null},
+    recording:false, recSec:0, recTimer:null,
+    noms:[{name:'',school:'',ceo:'same'},{name:'',school:'',ceo:'same'}],
+    chain:[
+      {name:'Alex Park',  school:'Babson ’27', status:'answered', q:'What did your first warehouse look like?'},
+      {name:'Sarah Kim',  school:'Babson ’28', status:'answered', q:'How did you land Lumen’s first big client?'},
+    ],
+    nominated:false,
+  };
+}
+S = fresh();
+
+const $ = s => document.querySelector(s);
+const ini = n => n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+const esc = s => String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const av = (name,color,cls='') => `<div class="av ${cls}" style="background:${color}">${ini(name)}</div>`;
+function cd(ms){ if(ms<=0) return 'Expired'; const h=Math.floor(ms/H), m=Math.floor(ms%H/60000), s=Math.floor(ms%60000/1000); return `${h}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`; }
+function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('on'); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove('on'),2200); }
+
+const ICON = {
+  watch:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9l5 3-5 3z" fill="currentColor"/></svg>',
+  chain:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 14a4 4 0 0 0 5.6 0l3-3a4 4 0 0 0-5.6-5.6l-1 1"/><path d="M14 10a4 4 0 0 0-5.6 0l-3 3a4 4 0 0 0 5.6 5.6l1-1"/></svg>',
+  me:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>',
+  ceo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16v12H4z"/><path d="M9 7V5h6v2"/></svg>',
+  lock:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+  play:'<svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>',
+};
+
+/* ---------- STUDENT SCREENS ---------- */
+function inviteBanner(){
+  if(S.q.status!=='none') return '';
+  const c=CEOS[S.invite.ceo];
+  return `<div class="invite" data-action="go" data-to="invite">
+    <div class="k">★ You’ve been nominated</div>
+    <div class="t">${esc(S.invite.from)} picked you to ask ${c.name} a question.</div>
+    <div class="cd" data-countdown>${cd(S.invite.expires-Date.now())} left</div>
+  </div>`;
+}
+function statusBanner(){
+  if(S.q.status==='sent') return `<div class="card" data-action="go" data-to="sent" style="cursor:pointer"><div class="row"><span class="pill wait">⏳ Waiting</span><div class="meta">${CEOS[S.q.ceo].name} has your question</div></div></div>`;
+  if(S.q.status==='answered' && !S.nominated) return `<div class="invite" data-action="go" data-to="answer"><div class="k">✉ New answer</div><div class="t">${CEOS[S.q.ceo].name} answered your question.</div><div class="cd">Watch now →</div></div>`;
+  return '';
+}
+function scrWatch(){
+  return `${inviteBanner()}${statusBanner()}
+  <h2>Answers worth watching</h2>
+  <p class="sub">Real questions from students, answered by the CEOs they asked. Anyone can watch. Only nominees can ask.</p>
+  <div class="lib">${LIBRARY.map((x,i)=>{const c=CEOS[x.ceo];return `<div class="tile" style="background:${c.grad}" data-action="lib" data-i="${i}">
+      <div class="ti pill" style="background:rgba(0,0,0,.25);color:#fff">${x.views} views</div>
+      <div class="tq">“${esc(x.q)}”</div><div class="tm">${esc(x.asker)} → ${c.name}</div></div>`}).join('')}</div>
+  <h3>CEOs on Edify</h3>
+  ${Object.entries(CEOS).map(([k,c])=>`<div class="card row">${av(c.name,c.color)}<div style="flex:1"><div class="name">${c.name}</div><div class="meta">${c.title}</div></div><span class="pill lock">${ICON.lock} Invite only</span></div>`).join('')}`;
+}
+function scrLib(i){
+  const x=LIBRARY[i], c=CEOS[x.ceo];
+  return `<button class="back" data-action="go" data-to="home">← Back</button>
+  ${videoCard(x.ceo, ANSWERS[x.ceo], `Answer to ${x.asker}`)}
+  <div class="card"><div class="meta">${esc(x.asker)} · ${esc(x.school)} asked</div><div class="name" style="margin-top:4px">“${esc(x.q)}”</div></div>
+  <button class="btn ghost" disabled>${ICON.lock} Ask ${c.name.split(' ')[0]} — nomination required</button>`;
+}
+function scrInvite(){
+  const c=CEOS[S.invite.ceo];
+  return `<button class="back" data-action="go" data-to="home">← Back</button>
+  <div class="card" style="text-align:center;padding:22px 16px">
+    <div class="row" style="justify-content:center;gap:-8px;margin-bottom:12px">${av(S.invite.from,'#2A2E5C')}<span style="font-size:20px">→</span>${av('You','#FF5A36')}<span style="font-size:20px">→</span>${av(c.name,c.color)}</div>
+    <h2>Your turn to ask.</h2>
+    <p class="sub" style="margin-bottom:10px">${esc(S.invite.from)} (${esc(S.invite.school)}) got an answer from ${c.name} and chose <b>you</b> to ask next.</p>
+    <div class="card" style="background:var(--bg);text-align:left;margin:0 0 12px"><div class="meta">Note from ${esc(S.invite.from.split(' ')[0])}</div><div style="font-size:14px;margin-top:4px">“${esc(S.invite.note)}”</div></div>
+    <span class="pill hot" data-countdown>${cd(S.invite.expires-Date.now())} left</span>
+  </div>
+  <div class="card row">${av(c.name,c.color)}<div style="flex:1"><div class="name">${c.name}</div><div class="meta">${c.title} · answers in ~72h</div></div></div>
+  <button class="btn primary" data-action="go" data-to="record">Record my question</button>
+  <p class="small" style="text-align:center;margin-top:10px">If you don’t ask within 48 hours, the spot goes to someone else.</p>`;
+}
+function scrRecord(){
+  const c=CEOS[S.q.ceo];
+  const camInner = S.q.video
+    ? `<video src="${S.q.video}" controls playsinline></video>`
+    : S.recording
+      ? `<div class="rec"><i></i> REC 0:${String(S.recSec).padStart(2,'0')} / 1:00</div><div class="q">${esc(S.q.text||'Say your question to camera…')}</div>`
+      : (S.recSec>0 ? `<div style="text-align:center;color:#fff"><div style="font-size:34px">✓</div><div style="font-weight:700;margin-top:6px">Take recorded · 0:${String(S.recSec).padStart(2,'0')}</div><div class="small" style="color:#aaa">Re-record as many times as you want</div></div>`
+      : `<div style="text-align:center"><div style="font-size:32px;margin-bottom:6px">🎥</div>Camera preview<br><span class="small">60 seconds max</span></div>`);
+  const hasTake = S.q.video || S.recSec>0;
+  return `<button class="back" data-action="go" data-to="invite">← Back</button>
+  <h2>Ask ${c.name.split(' ')[0]}</h2>
+  <p class="sub">Keep it under 60 seconds. Be specific — the best questions get the best answers.</p>
+  <div class="ceo-pick">${Object.entries(CEOS).map(([k,o])=>`<button class="ceo-opt ${k===S.q.ceo?'on':''}" data-action="ceo" data-k="${k}">${av(o.name,o.color,'sm')}<div>${o.name}</div></button>`).join('')}</div>
+  <p class="small" style="margin-bottom:12px">Nominated for ${CEOS[S.invite.ceo].name}, but you can pick any CEO.</p>
+  <textarea id="qtext" rows="3" placeholder="Type your question (shows as a caption)">${esc(S.q.text)}</textarea>
+  <div class="chips">${PROMPTS.map(p=>`<button class="chip ${S.q.text===p?'on':''}" data-action="prompt" data-p="${esc(p)}">${esc(p)}</button>`).join('')}</div>
+  <div class="cam">${camInner}</div>
+  <div class="row" style="gap:8px;margin-bottom:10px">
+    <button class="btn ${S.recording?'dark':'ghost'}" data-action="rec" style="flex:1">${S.recording?'■ Stop':(hasTake?'↻ Re-record':'● Record')}</button>
+    <label class="btn ghost" style="flex:1;cursor:pointer">↑ Upload video<input type="file" accept="video/*" id="upload" hidden></label>
+  </div>
+  <button class="btn primary" data-action="send" ${(S.q.text.trim()&&!S.recording)?'':'disabled'}>Send to ${c.name.split(' ')[0]}</button>
+  <p class="small" style="text-align:center;margin-top:8px">Demo: camera is simulated. Uploading a real video file works.</p>`;
+}
+function scrSent(){
+  const c=CEOS[S.q.ceo];
+  return `<button class="back" data-action="go" data-to="home">← Home</button>
+  <div class="confetti"><div class="big">✉</div></div>
+  <h2 style="text-align:center">Sent to ${c.name.split(' ')[0]}.</h2>
+  <p class="sub" style="text-align:center">CEOs on Edify commit to answering within 72 hours. We’ll ping you the second it lands.</p>
+  <div class="card">
+    <div class="steps-v">
+      <div class="sv done"><b>Question sent</b><span>“${esc(S.q.text)}”</span></div>
+      <div class="sv now"><b>${c.name} is recording</b><span>Answer window: 72 hours</span></div>
+      <div class="sv"><b>You unlock 2 nominations</b><span>Pick who asks next</span></div>
+    </div>
+  </div>
+  <div class="demo">Demo controls</div>
+  <button class="btn dark" data-action="fastforward">⏩ Fast-forward: CEO answers</button>
+  <button class="btn ghost" style="margin-top:8px" data-action="mode" data-m="ceo">Or switch to CEO mode and answer it</button>`;
+}
+function videoCard(ceo, text, label){
+  const c=CEOS[ceo];
+  return `<div class="video" style="background:${c.grad}" data-vid>
+    <div class="who">${label}</div>
+    <div class="big-av">${ini(c.name)}</div>
+    <div class="wave">${'<b></b>'.repeat(9).replace(/<b><\/b>/g,(m,i)=>`<b style="animation-delay:${(Math.random()*0.8).toFixed(2)}s"></b>`)}</div>
+    <div class="play" data-action="play" data-text="${esc(text)}"><span>${ICON.play}</span></div>
+    <div class="cap"></div>
+    <div><div class="meta" style="color:rgba(255,255,255,.85);font-weight:600">${c.name} · ${c.title}</div><div class="bar"><i></i></div></div>
+  </div>`;
+}
+function scrAnswer(){
+  const c=CEOS[S.q.ceo];
+  return `<button class="back" data-action="go" data-to="home">← Home</button>
+  ${videoCard(S.q.ceo, S.q.answer, 'Answer for you')}
+  <div class="card"><div class="meta">You asked</div><div class="name" style="margin-top:4px">“${esc(S.q.text)}”</div></div>
+  <button class="btn ghost" data-action="share">Copy LinkedIn post</button>
+  <div class="unlock" style="margin-top:12px">
+    <div class="row"><div style="font-size:28px">🔓</div><div><div class="name">You unlocked 2 nominations</div><div class="meta" style="color:var(--ink2)">Pick who gets to ask next. They’ll have 48 hours.</div></div></div>
+  </div>
+  <button class="btn primary" data-action="go" data-to="nominate" ${S.nominated?'disabled':''}>${S.nominated?'Nominations sent ✓':'Nominate 2 people'}</button>`;
+}
+function scrNominate(){
+  const c=CEOS[S.q.ceo];
+  const ready = S.noms.every(n=>n.name.trim());
+  return `<button class="back" data-action="go" data-to="answer">← Back</button>
+  <h2>Who asks next?</h2>
+  <p class="sub">Pick people who’d ask a great question. Your name is attached to the invite.</p>
+  ${S.noms.map((n,i)=>`<div class="slot"><div class="lbl">Nomination ${i+1}</div>
+    <input data-nom="${i}" data-f="name" placeholder="Name" value="${esc(n.name)}">
+    <input data-nom="${i}" data-f="school" placeholder="School or email" value="${esc(n.school)}">
+    <select data-nom="${i}" data-f="ceo"><option value="same" ${n.ceo==='same'?'selected':''}>Ask ${c.name} (same CEO)</option>${Object.entries(CEOS).filter(([k])=>k!==S.q.ceo).map(([k,o])=>`<option value="${k}" ${n.ceo===k?'selected':''}>Ask ${o.name}</option>`).join('')}</select>
+  </div>`).join('')}
+  <button class="btn ghost" data-action="autofill" style="margin-bottom:8px">Demo: fill with sample names</button>
+  <button class="btn primary" data-action="nominate" ${ready?'':'disabled'}>Send nominations</button>`;
+}
+function scrChain(){
+  const c=CEOS[S.q.status!=='none'?S.q.ceo:S.invite.ceo];
+  const me = S.q.status==='none' ? {status:'invited'} : {status:S.q.status, q:S.q.text};
+  const nodes = S.chain.map(n=>`<div class="node">${av(n.name,'#2A2E5C')}<div class="body"><div class="row" style="gap:8px"><span class="name">${esc(n.name)}</span><span class="pill good">Answered</span></div><div class="meta">${esc(n.school)}</div><div class="q">“${esc(n.q)}”</div></div></div>`).join('');
+  const meLabel = {invited:'<span class="pill hot">Nominated</span>', sent:'<span class="pill wait">Waiting</span>', answered:'<span class="pill good">Answered</span>'}[me.status];
+  const meNode = `<div class="node me">${av('You','#FF5A36')}<div class="body"><div class="row" style="gap:8px"><span class="name">You</span>${meLabel}</div><div class="meta">Babson</div>${me.q?`<div class="q">“${esc(me.q)}”</div>`:''}</div></div>`;
+  const split = S.nominated ? `<div class="split">${S.noms.map(n=>{const tc = n.ceo==='same'?c:CEOS[n.ceo];return `<div class="mini"><div class="row" style="gap:8px">${av(n.name,'#9A9CB0','sm')}<div><div class="name" style="font-size:13px">${esc(n.name)}</div><div class="meta" style="font-size:11px">→ ${tc.name.split(' ')[0]}</div></div></div><div class="pill hot" style="margin-top:8px" data-countdown-nom>48h 00m left</div></div>`}).join('')}</div>` : '';
+  const total = S.chain.length + 1 + (S.nominated?2:0);
+  const answered = S.chain.length + (S.q.status==='answered'?1:0);
+  return `<h2>The ${c.name.split(' ')[0]} chain</h2>
+  <p class="sub">Every answer unlocks 2 more askers. This is how Edify grows.</p>
+  <div class="stats"><div class="stat"><b>${total}</b><span>People</span></div><div class="stat"><b>${answered}</b><span>Answers</span></div><div class="stat"><b>${S.nominated?'2.0':'—'}</b><span>Nominees / answer</span></div></div>
+  <div class="card"><div class="chain">${nodes}${meNode}</div>${split}
+  ${S.nominated?'':'<p class="small" style="margin-left:52px">Your 2 nominations appear here once you’re answered.</p>'}</div>`;
+}
+function scrMe(){
+  const st = {none:'Not asked yet', sent:'Waiting for answer', answered:'Answered'}[S.q.status];
+  return `<h2>You</h2>
+  <p class="sub">Babson · nominated by ${esc(S.invite.from)}</p>
+  <div class="card row"><div style="flex:1"><div class="meta">Your question</div><div class="name">${st}</div></div>
+  ${S.q.status==='none'?'<button class="chip on" data-action="go" data-to="invite">Ask now</button>':S.q.status==='sent'?'<button class="chip" data-action="go" data-to="sent">View</button>':'<button class="chip on" data-action="go" data-to="answer">Watch</button>'}</div>
+  <div class="card row"><div style="flex:1"><div class="meta">Nominations</div><div class="name">${S.nominated?'2 sent':(S.q.status==='answered'?'2 ready to send':'Unlock by getting answered')}</div></div>
+  ${S.q.status==='answered'&&!S.nominated?'<button class="chip on" data-action="go" data-to="nominate">Nominate</button>':''}</div>`;
+}
+
+/* ---------- CEO MODE ---------- */
+function scrCeo(){
+  const c=CEOS[S.q.ceo];
+  const mine = S.q.status==='sent' ? `<div class="card"><div class="inbox-item">${av('You','#FF5A36')}<div class="body"><div class="row" style="gap:8px"><span class="name">New question</span><span class="pill hot">71h left</span></div><div class="meta">Babson · nominated by ${esc(S.invite.from)}</div><div class="q" style="font-size:14px;margin-top:6px">“${esc(S.q.text)}”</div></div></div>
+    ${S.q.video?`<video src="${S.q.video}" controls playsinline style="width:100%;border-radius:12px;margin-top:10px"></video>`:''}
+    <div class="divider"></div>
+    <textarea id="ceoAns" rows="3" placeholder="Record your answer (type it here for the demo)">${esc(ANSWERS[S.q.ceo])}</textarea>
+    <button class="btn primary" style="margin-top:10px" data-action="ceoAnswer">● Record & send answer</button></div>` : '';
+  return `<h2>${c.name.split(' ')[0]}’s inbox</h2>
+  <p class="sub">CEOs see a short, curated queue: only nominated students, never a flood.</p>
+  <div class="stats"><div class="stat"><b>${S.q.status==='sent'?1:0}</b><span>Waiting</span></div><div class="stat"><b>${12+(S.q.status==='answered'?1:0)}</b><span>Answered</span></div><div class="stat"><b>18k</b><span>Views</span></div></div>
+  ${mine || `<div class="card" style="text-align:center;padding:24px"><div style="font-size:28px">☕</div><div class="name" style="margin-top:6px">Inbox zero</div><div class="meta">${S.q.status==='answered'?'You answered the latest question.':'No questions yet — switch to Student mode and send one.'}</div></div>`}
+  <button class="btn ghost" data-action="mode" data-m="student">← Back to Student mode</button>`;
+}
+
+/* ---------- RENDER ---------- */
+function render(){
+  $('#modeBadge').textContent = S.mode==='ceo' ? 'CEO mode' : 'Student';
+  $('#modeBadge').style.background = S.mode==='ceo' ? 'var(--accent)' : 'var(--navy)';
+  let html;
+  if(S.mode==='ceo') html = scrCeo();
+  else if(S.screen==='home'){
+    html = S.tab==='watch'?scrWatch():S.tab==='chain'?scrChain():scrMe();
+  } else html = ({invite:scrInvite, record:scrRecord, sent:scrSent, answer:scrAnswer, nominate:scrNominate, lib:()=>scrLib(S.libI)})[S.screen]();
+  $('#screen').innerHTML = html;
+  const tabs = [['watch','Watch','watch'],['chain','Chain','chain'],['me','You','me'],['ceo','CEO mode','ceo']];
+  $('#nav').innerHTML = tabs.map(([k,l,ic])=>{
+    const on = k==='ceo' ? S.mode==='ceo' : (S.mode==='student' && S.screen==='home' && S.tab===k);
+    return `<button class="${on?'on':''}" data-action="tab" data-t="${k}">${ICON[ic]}${l}</button>`;
+  }).join('');
+  const up = $('#upload');
+  if(up) up.onchange = e => { const f=e.target.files[0]; if(!f) return; try{ S.q.video = URL.createObjectURL(f); }catch(_){} S.recSec=0; render(); toast('Video attached'); };
+}
+
+document.addEventListener('click', e=>{
+  const el = e.target.closest('[data-action]'); if(!el) return;
+  const a = el.dataset.action;
+  const qt = $('#qtext'); if(qt) S.q.text = qt.value;
+  if(a==='go'){ S.screen = el.dataset.to; S.mode='student'; }
+  if(a==='tab'){ if(el.dataset.t==='ceo'){ S.mode='ceo'; } else { S.mode='student'; S.screen='home'; S.tab=el.dataset.t; } }
+  if(a==='mode'){ S.mode = el.dataset.m; if(S.mode==='student'){ S.screen = S.q.status==='answered'?'answer':'home'; } }
+  if(a==='lib'){ S.libI = +el.dataset.i; S.screen='lib'; }
+  if(a==='ceo'){ S.q.ceo = el.dataset.k; }
+  if(a==='prompt'){ S.q.text = el.dataset.p; }
+  if(a==='rec'){
+    if(S.recording){ clearInterval(S.recTimer); S.recording=false; }
+    else { S.q.video=null; S.recording=true; S.recSec=0; S.recTimer=setInterval(()=>{ S.recSec++; if(S.recSec>=60){ clearInterval(S.recTimer); S.recording=false; } const qt2=$('#qtext'); if(qt2) S.q.text=qt2.value; render(); },1000); }
+  }
+  if(a==='send'){ if(!S.q.text.trim()) return; S.q.status='sent'; S.screen='sent'; toast('Question sent'); }
+  if(a==='fastforward'){ S.q.status='answered'; S.q.answer=ANSWERS[S.q.ceo]; S.screen='answer'; toast(CEOS[S.q.ceo].name+' answered!'); }
+  if(a==='ceoAnswer'){ const t=$('#ceoAns'); S.q.answer=(t&&t.value.trim())||ANSWERS[S.q.ceo]; S.q.status='answered'; toast('Answer sent to student'); }
+  if(a==='play'){ playVideo(el); return; }
+  if(a==='share'){
+    const c=CEOS[S.q.ceo];
+    const post=`I asked ${c.name} (${c.title}) a question on Edify: "${S.q.text}"\n\nThe answer stuck with me: "${S.q.answer}"\n\nThanks to ${S.invite.from} for the nomination. I've nominated two people to ask next.`;
+    try{ navigator.clipboard.writeText(post).then(()=>toast('Post copied — paste into LinkedIn'),()=>toast('Copy blocked in this viewer')); }catch(_){ toast('Copy blocked in this viewer'); }
+    return;
+  }
+  if(a==='autofill'){ S.noms=[{name:'Priya Shah',school:'Babson ’28',ceo:'same'},{name:'Marco Diaz',school:'Northeastern',ceo:'daniel'}]; }
+  if(a==='nominate'){ S.nominated=true; S.mode='student'; S.screen='home'; S.tab='chain'; toast('2 nominations sent'); }
+  if(a==='reset'){ clearInterval(S.recTimer); S=fresh(); toast('Demo reset'); }
+  render();
+});
+document.addEventListener('input', e=>{
+  const t=e.target;
+  if(t.id==='qtext'){ S.q.text=t.value; const b=document.querySelector('[data-action="send"]'); if(b) b.disabled=!(t.value.trim()&&!S.recording); const cq=document.querySelector('.cam .q'); if(cq) cq.textContent=t.value||'Say your question to camera…'; }
+  if(t.dataset.nom!==undefined){ S.noms[+t.dataset.nom][t.dataset.f]=t.value; const b=document.querySelector('[data-action="nominate"]'); if(b) b.disabled=!S.noms.every(n=>n.name.trim()); }
+});
+document.addEventListener('change', e=>{ const t=e.target; if(t.dataset && t.dataset.nom!==undefined){ S.noms[+t.dataset.nom][t.dataset.f]=t.value; } });
+
+function playVideo(btn){
+  const v = btn.closest('[data-vid]'); const cap=v.querySelector('.cap'), bar=v.querySelector('.bar i'), wave=v.querySelector('.wave');
+  const text = btn.dataset.text; btn.style.display='none'; wave.classList.add('on');
+  const words = text.split(' '); let i=0; const dur = Math.max(5000, words.length*320);
+  const start=Date.now();
+  const tick=setInterval(()=>{
+    const p=Math.min(1,(Date.now()-start)/dur); bar.style.width=(p*100)+'%';
+    const n=Math.ceil(p*words.length); if(n!==i){ i=n; cap.textContent=words.slice(0,i).join(' '); }
+    if(p>=1 || !document.body.contains(v)){ clearInterval(tick); wave.classList.remove('on'); btn.style.display='flex'; btn.querySelector('span').innerHTML='↻'; }
+  },60);
+}
+
+setInterval(()=>{
+  document.querySelectorAll('[data-countdown]').forEach(el=>{ el.textContent = cd(S.invite.expires-Date.now())+' left'; });
+},1000);
+
+render();
+</script>
+</body>
+</html>
