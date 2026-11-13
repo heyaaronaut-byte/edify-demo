@@ -5,205 +5,321 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Edify — Nomination Chain MVP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --ink:#15172B; --ink2:#4A4D63; --ink3:#8A8C9E;
-    --bg:#F4EFE6; --card:#FFFFFF; --line:#E6E0D4;
-    --accent:#FF5A36; --accent-soft:#FFE7E0;
-    --gold:#F2B33D; --good:#1F9D6B; --good-soft:#DDF3EA;
-    --navy:#1E2246;
-    --r:18px;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#E9E3D7;color:var(--ink);min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:24px 12px}
-  .wrap{display:flex;gap:32px;align-items:flex-start;max-width:980px;width:100%;justify-content:center}
-  .side{max-width:300px;padding-top:20px}
-  .side h1{font-family:'Fraunces',serif;font-size:34px;line-height:1.05;margin-bottom:12px}
-  .side p{color:var(--ink2);font-size:14px;line-height:1.55;margin-bottom:12px}
-  .side .steps{font-size:13px;color:var(--ink2);line-height:1.7;padding-left:18px}
-  .side .reset{margin-top:16px;font-size:13px;color:var(--accent);background:none;border:none;cursor:pointer;font-weight:600;font-family:inherit;padding:0}
-  @media (max-width:760px){.side{display:none}}
+:root{
+  --bg:#09090D; --bg2:#101017; --card:#15151D; --card2:#1C1C26; --line:rgba(255,255,255,.07); --line2:rgba(255,255,255,.12);
+  --t1:#F5F3EE; --t2:#A3A2AD; --t3:#6E6D7A;
+  --acc:#FF6B3D; --acc2:#FF3D7F; --gold:#F5C46B; --good:#3DD68C;
+  --grad:linear-gradient(135deg,#FF8A3D 0%,#FF3D7F 100%);
+  --serif:'Instrument Serif',Georgia,serif;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:Inter,system-ui,sans-serif;background:#050507;color:var(--t1);min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:28px 12px;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(600px 400px at 70% 10%,rgba(255,107,61,.12),transparent 70%),radial-gradient(500px 400px at 20% 90%,rgba(255,61,127,.08),transparent 70%);pointer-events:none}
+.wrap{display:flex;gap:44px;align-items:flex-start;max-width:1000px;width:100%;justify-content:center;position:relative}
+.side{max-width:290px;padding-top:28px}
+.side .eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--acc);font-weight:600;margin-bottom:14px}
+.side h1{font-family:var(--serif);font-weight:400;font-size:46px;line-height:.98;letter-spacing:-.5px;margin-bottom:16px}
+.side h1 em{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.side p{color:var(--t2);font-size:14px;line-height:1.6;margin-bottom:18px}
+.side ol{list-style:none;counter-reset:s}
+.side li{counter-increment:s;font-size:13px;color:var(--t2);padding:9px 0;border-top:1px solid var(--line);display:flex;gap:10px}
+.side li::before{content:counter(s);font-family:var(--serif);font-size:18px;color:var(--t1);width:16px;line-height:1}
+.side .reset{margin-top:18px;font-size:12.5px;color:var(--t2);background:var(--card);border:1px solid var(--line2);border-radius:99px;padding:8px 14px;cursor:pointer;font-family:inherit}
+.side .reset:hover{color:var(--t1)}
+@media (max-width:780px){.side{display:none}}
 
-  .phone{width:390px;max-width:100%;height:780px;background:var(--bg);border-radius:40px;box-shadow:0 0 0 10px #15172B,0 30px 60px rgba(21,23,43,.25);overflow:hidden;display:flex;flex-direction:column;position:relative}
-  .top{padding:18px 20px 10px;display:flex;align-items:center;justify-content:space-between}
-  .logo{font-family:'Fraunces',serif;font-size:24px;font-weight:700;letter-spacing:-.5px}
-  .logo span{color:var(--accent)}
-  .mode{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;border-radius:99px;background:var(--navy);color:#fff}
-  .screen{flex:1;overflow-y:auto;padding:4px 18px 24px}
-  .screen::-webkit-scrollbar{width:0}
-  .nav{display:flex;border-top:1px solid var(--line);background:#fff}
-  .nav button{flex:1;padding:12px 0 14px;background:none;border:none;font-family:inherit;font-size:11.5px;font-weight:600;color:var(--ink3);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
-  .nav button.on{color:var(--ink)}
-  .nav svg{width:22px;height:22px}
-  .back{background:none;border:none;font-family:inherit;font-size:14px;font-weight:600;color:var(--ink2);cursor:pointer;margin:4px 0 12px;display:flex;align-items:center;gap:4px}
+.phone{width:390px;max-width:100%;height:800px;background:var(--bg);border-radius:46px;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 0 0 11px #17171E,0 0 0 12px rgba(255,255,255,.06),0 40px 80px rgba(0,0,0,.6);overflow:hidden;display:flex;flex-direction:column;position:relative}
+.status{height:40px;display:flex;justify-content:space-between;align-items:center;padding:6px 28px 0;font-size:13px;font-weight:600}
+.status .island{width:110px;height:30px;background:#000;border-radius:20px;position:absolute;left:50%;transform:translateX(-50%);top:8px}
+.top{padding:8px 20px 8px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:var(--serif);font-size:30px;letter-spacing:-.5px;line-height:1}
+.logo i{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mode{font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:7px 11px;border-radius:99px;background:var(--card);border:1px solid var(--line2);color:var(--t2);display:flex;align-items:center;gap:6px}
+.mode .d{width:6px;height:6px;border-radius:50%;background:var(--good);box-shadow:0 0 8px var(--good)}
+.mode.ceo{background:rgba(255,107,61,.12);border-color:rgba(255,107,61,.35);color:var(--acc)}
+.mode.ceo .d{background:var(--acc);box-shadow:0 0 8px var(--acc)}
 
-  h2{font-family:'Fraunces',serif;font-size:26px;line-height:1.1;margin-bottom:6px}
-  h3{font-size:15px;font-weight:700;margin:18px 0 10px}
-  .sub{color:var(--ink2);font-size:14px;line-height:1.5;margin-bottom:16px}
-  .card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:12px;border:1px solid var(--line)}
-  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px;border-radius:14px;border:none;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:transform .1s}
-  .btn:active{transform:scale(.98)}
-  .btn.primary{background:var(--accent);color:#fff}
-  .btn.dark{background:var(--ink);color:#fff}
-  .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
-  .btn:disabled{opacity:.4;cursor:not-allowed}
-  .row{display:flex;align-items:center;gap:12px}
-  .av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex-shrink:0}
-  .av.sm{width:30px;height:30px;font-size:11px}
-  .name{font-weight:700;font-size:14.5px}
-  .meta{font-size:12.5px;color:var(--ink3)}
-  .pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:99px}
-  .pill.hot{background:var(--accent-soft);color:var(--accent)}
-  .pill.good{background:var(--good-soft);color:var(--good)}
-  .pill.lock{background:#EEEAF6;color:#5B4FA0}
-  .pill.wait{background:#FFF3D6;color:#A06D00}
+.screen{flex:1;overflow-y:auto;padding:4px 18px 28px;position:relative}
+.screen::-webkit-scrollbar{width:0}
+.screen>*{animation:rise .5s var(--ease) both}
+.screen>*:nth-child(2){animation-delay:.04s}.screen>*:nth-child(3){animation-delay:.08s}.screen>*:nth-child(4){animation-delay:.12s}.screen>*:nth-child(5){animation-delay:.16s}.screen>*:nth-child(n+6){animation-delay:.2s}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 
-  .invite{background:var(--navy);color:#fff;border-radius:22px;padding:18px;margin-bottom:16px;cursor:pointer;position:relative;overflow:hidden}
-  .invite::after{content:"";position:absolute;right:-40px;top:-40px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(255,90,54,.55),transparent 70%)}
-  .invite .k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--gold)}
-  .invite .t{font-family:'Fraunces',serif;font-size:21px;line-height:1.15;margin:6px 0 10px}
-  .invite .cd{font-variant-numeric:tabular-nums;font-weight:700;font-size:13px;background:rgba(255,255,255,.12);display:inline-block;padding:5px 10px;border-radius:99px}
+.nav{display:flex;padding:8px 10px 22px;background:linear-gradient(to top,var(--bg) 70%,transparent);border-top:1px solid var(--line)}
+.nav button{flex:1;padding:8px 0;background:none;border:none;font-family:inherit;font-size:10.5px;font-weight:600;color:var(--t3);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;transition:color .2s}
+.nav button.on{color:var(--t1)}
+.nav button.on::after{content:"";position:absolute;top:-9px;width:18px;height:2px;border-radius:2px;background:var(--grad)}
+.nav svg{width:22px;height:22px}
+.nav .badge{position:absolute;top:4px;right:calc(50% - 18px);width:8px;height:8px;border-radius:50%;background:var(--acc2);box-shadow:0 0 0 2px var(--bg)}
 
-  .video{border-radius:18px;aspect-ratio:9/12;position:relative;overflow:hidden;color:#fff;display:flex;flex-direction:column;justify-content:flex-end;padding:16px;margin-bottom:12px}
-  .video .play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
-  .video .play span{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.22);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center}
-  .video .big-av{position:absolute;top:38%;left:50%;transform:translate(-50%,-50%);width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:40px;font-weight:700}
-  .video .cap{position:relative;font-size:15px;line-height:1.45;font-weight:600;text-shadow:0 1px 8px rgba(0,0,0,.35);min-height:66px}
-  .video .bar{position:relative;height:4px;background:rgba(255,255,255,.25);border-radius:4px;margin-top:10px;overflow:hidden}
-  .video .bar i{display:block;height:100%;width:0;background:#fff}
-  .video .who{position:absolute;top:14px;left:14px;font-size:12.5px;font-weight:700;background:rgba(0,0,0,.25);padding:5px 10px;border-radius:99px}
-  .wave{position:absolute;top:58%;left:50%;transform:translateX(-50%);display:flex;gap:4px;height:26px;align-items:center;opacity:0}
-  .wave.on{opacity:1}
-  .wave b{width:4px;background:#fff;border-radius:3px;animation:w 1s ease-in-out infinite}
-  @keyframes w{0%,100%{height:6px}50%{height:24px}}
+.back{background:none;border:none;font-family:inherit;font-size:13.5px;font-weight:500;color:var(--t2);cursor:pointer;margin:2px 0 14px;display:flex;align-items:center;gap:6px}
+h2{font-family:var(--serif);font-weight:400;font-size:34px;line-height:1.02;letter-spacing:-.4px;margin-bottom:8px}
+h2 em{font-style:italic;color:var(--t2)}
+h3{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin:24px 0 12px;display:flex;justify-content:space-between;align-items:center}
+.sub{color:var(--t2);font-size:14px;line-height:1.55;margin-bottom:18px}
+.card{background:var(--card);border-radius:20px;padding:16px;margin-bottom:10px;border:1px solid var(--line)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px;border-radius:16px;border:none;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;transition:transform .15s var(--ease),opacity .2s,box-shadow .2s;letter-spacing:-.1px}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--grad);color:#fff;box-shadow:0 10px 30px -8px rgba(255,61,127,.55)}
+.btn.primary:not(:disabled):hover{box-shadow:0 14px 34px -6px rgba(255,61,127,.7)}
+.btn.light{background:var(--t1);color:#0B0B10}
+.btn.ghost{background:var(--card);color:var(--t1);border:1px solid var(--line2)}
+.btn:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+.row{display:flex;align-items:center;gap:12px}
+.av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13.5px;color:#fff;flex-shrink:0;position:relative}
+.av.sm{width:30px;height:30px;font-size:11px}
+.av.lg{width:64px;height:64px;font-size:20px}
+.av.ring::before{content:"";position:absolute;inset:-3px;border-radius:50%;padding:2px;background:var(--grad);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.name{font-weight:600;font-size:14.5px;letter-spacing:-.1px}
+.meta{font-size:12.5px;color:var(--t3)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:5px 9px;border-radius:99px;letter-spacing:.01em}
+.pill.hot{background:rgba(255,107,61,.14);color:#FF9A70}
+.pill.good{background:rgba(61,214,140,.13);color:var(--good)}
+.pill.lock{background:rgba(255,255,255,.06);color:var(--t2)}
+.pill.wait{background:rgba(245,196,107,.13);color:var(--gold)}
+.live{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--acc2);box-shadow:0 0 0 0 rgba(255,61,127,.6);animation:pulse 1.8s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,61,127,.55)}70%{box-shadow:0 0 0 8px rgba(255,61,127,0)}100%{box-shadow:0 0 0 0 rgba(255,61,127,0)}}
 
-  .cam{background:#0E0F1C;border-radius:18px;aspect-ratio:9/11;position:relative;display:flex;align-items:center;justify-content:center;color:#8A8C9E;font-size:13px;overflow:hidden;margin-bottom:12px}
-  .cam video{width:100%;height:100%;object-fit:cover}
-  .rec{position:absolute;top:14px;left:14px;display:flex;align-items:center;gap:6px;color:#fff;font-weight:700;font-size:13px;font-variant-numeric:tabular-nums}
-  .rec i{width:10px;height:10px;border-radius:50%;background:#FF3B30;animation:blink 1s infinite}
-  @keyframes blink{50%{opacity:.2}}
-  .cam .q{position:absolute;bottom:16px;left:16px;right:16px;color:#fff;font-size:14px;line-height:1.4;font-weight:600}
-  .ring{position:absolute;bottom:14px;right:14px}
-  textarea,input,select{width:100%;font-family:inherit;font-size:14px;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);resize:none}
-  textarea:focus,input:focus,select:focus{outline:none;border-color:var(--ink)}
-  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 14px}
-  .chip{font-size:12.5px;font-weight:600;padding:7px 11px;border-radius:99px;background:#fff;border:1.5px solid var(--line);cursor:pointer;color:var(--ink2);font-family:inherit}
-  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-  .ceo-pick{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:6px}
-  .ceo-pick::-webkit-scrollbar{height:0}
-  .ceo-opt{flex-shrink:0;width:96px;border:1.5px solid var(--line);border-radius:14px;padding:10px 8px;text-align:center;background:#fff;cursor:pointer;font-family:inherit}
-  .ceo-opt.on{border-color:var(--accent);background:var(--accent-soft)}
-  .ceo-opt .av{margin:0 auto 6px}
-  .ceo-opt div{font-size:11.5px;font-weight:700;line-height:1.2}
-  .small{font-size:12px;color:var(--ink3);line-height:1.5}
+/* ticker */
+.ticker{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:14px;overflow:hidden;height:42px}
+.ticker .tk{font-size:12.5px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .35s,transform .35s var(--ease)}
+.ticker .tk b{color:var(--t1);font-weight:600}
+.ticker .tk.out{opacity:0;transform:translateY(-8px)}
 
-  .steps-v{position:relative;padding-left:26px;margin:8px 0 18px}
-  .steps-v::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:var(--line)}
-  .sv{position:relative;margin-bottom:18px}
-  .sv::before{content:"";position:absolute;left:-23px;top:3px;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--line)}
-  .sv.done::before{background:var(--good);border-color:var(--good)}
-  .sv.now::before{background:var(--gold);border-color:var(--gold);box-shadow:0 0 0 5px rgba(242,179,61,.25)}
-  .sv b{font-size:14px;display:block}
-  .sv span{font-size:12.5px;color:var(--ink3)}
+/* invite hero */
+.hero{position:relative;border-radius:26px;padding:20px;margin-bottom:14px;cursor:pointer;overflow:hidden;background:#1A1220;border:1px solid rgba(255,107,61,.25);transition:transform .2s var(--ease)}
+.hero:active{transform:scale(.985)}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(300px 200px at 100% 0%,rgba(255,107,61,.45),transparent 70%),radial-gradient(260px 200px at 0% 100%,rgba(255,61,127,.28),transparent 70%)}
+.hero::after{content:"";position:absolute;inset:-50%;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.08) 50%,transparent 60%);animation:shine 4s infinite}
+@keyframes shine{0%{transform:translateX(-30%)}60%,100%{transform:translateX(30%)}}
+.hero>*{position:relative;z-index:1}
+.hero .k{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--gold);display:flex;align-items:center;gap:8px}
+.hero .t{font-family:var(--serif);font-size:28px;line-height:1.05;margin:10px 0 16px;letter-spacing:-.3px}
+.hero .t em{font-style:italic}
+.hero .foot{display:flex;align-items:center;justify-content:space-between}
+.hero .cta{font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
 
-  .chain{position:relative;padding-left:4px}
-  .node{display:flex;gap:12px;position:relative;padding-bottom:18px}
-  .node:not(:last-child)::before{content:"";position:absolute;left:20px;top:44px;bottom:0;width:2px;background:var(--line)}
-  .node.me .av{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--accent)}
-  .node .body{flex:1;padding-top:2px}
-  .node .q{font-size:13px;color:var(--ink2);margin-top:4px;line-height:1.4}
-  .split{display:flex;gap:10px;margin-left:52px;margin-top:-6px;padding-bottom:16px}
-  .split .mini{flex:1;background:#fff;border:1.5px dashed var(--line);border-radius:14px;padding:10px}
-  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
-  .stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 10px;text-align:center}
-  .stat b{font-family:'Fraunces',serif;font-size:22px;display:block}
-  .stat span{font-size:11px;color:var(--ink3);font-weight:600}
-  .lib{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .tile{border-radius:16px;aspect-ratio:3/4;position:relative;overflow:hidden;color:#fff;padding:12px;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer}
-  .tile .tq{font-size:12.5px;font-weight:700;line-height:1.3}
-  .tile .tm{font-size:11px;opacity:.85;margin-top:4px}
-  .tile .ti{position:absolute;top:10px;left:10px}
-  .toast{position:absolute;left:50%;bottom:86px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 16px;border-radius:12px;font-size:13px;font-weight:600;opacity:0;transition:.25s;pointer-events:none;white-space:nowrap;z-index:5}
-  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
-  .confetti{text-align:center;padding:10px 0 4px}
-  .confetti .big{font-family:'Fraunces',serif;font-size:56px;line-height:1;color:var(--accent)}
-  .unlock{background:linear-gradient(135deg,#FFE7E0,#FFF3D6);border:1.5px solid #FFD4C7;border-radius:var(--r);padding:16px;margin:4px 0 14px}
-  .slot{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:12px}
-  .slot .lbl{font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
-  .slot input,.slot select{margin-bottom:8px}
-  .demo{font-size:12px;font-weight:700;color:var(--ink3);text-align:center;margin:10px 0;letter-spacing:.04em;text-transform:uppercase}
-  .inbox-item{display:flex;gap:12px;align-items:flex-start}
-  .inbox-item .body{flex:1}
-  .divider{height:1px;background:var(--line);margin:12px 0}
+/* countdown ring */
+.cring{position:relative;width:54px;height:54px;flex-shrink:0}
+.cring svg{transform:rotate(-90deg)}
+.cring .v{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-variant-numeric:tabular-nums;font-weight:700;font-size:13px;line-height:1}
+.cring .v small{font-size:8.5px;color:var(--t2);font-weight:600;letter-spacing:.08em;margin-top:2px}
+
+/* stories */
+.stories{display:flex;gap:14px;overflow-x:auto;padding:2px 2px 6px;margin:0 -18px 6px;padding-left:18px}
+.stories::-webkit-scrollbar{height:0}
+.story{flex-shrink:0;width:64px;text-align:center;cursor:pointer}
+.story .av{margin:0 auto 6px}
+.story div{font-size:11px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.story.new .av::before{background:var(--grad)}
+.story.seen .av::before{background:rgba(255,255,255,.18)}
+
+/* feed */
+.feed{display:flex;flex-direction:column;gap:12px}
+.post{border-radius:22px;overflow:hidden;position:relative;cursor:pointer;aspect-ratio:4/4.4;display:flex;flex-direction:column;justify-content:flex-end;padding:16px;transition:transform .2s var(--ease)}
+.post:active{transform:scale(.985)}
+.post::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.75),rgba(0,0,0,.05) 55%)}
+.post>*{position:relative;z-index:1}
+.post .ptop{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;z-index:1}
+.post .mono{position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);font-family:var(--serif);font-size:84px;opacity:.22;z-index:0}
+.post .pq{font-family:var(--serif);font-size:23px;line-height:1.1;letter-spacing:-.2px;margin-bottom:10px}
+.post .pm{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.8)}
+.glass{background:rgba(0,0,0,.35);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#fff;border:1px solid rgba(255,255,255,.12)}
+.ceo-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.ceo-row:last-child{border-bottom:none}
+
+/* player */
+.player{border-radius:24px;aspect-ratio:9/13;position:relative;overflow:hidden;margin-bottom:12px;display:flex;flex-direction:column;justify-content:flex-end;padding:18px}
+.player::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.8),transparent 50%,rgba(0,0,0,.35))}
+.player>*{position:relative;z-index:2}
+.player .bars{position:absolute;top:12px;left:12px;right:12px;display:flex;gap:4px;z-index:3}
+.player .bars span{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.25);overflow:hidden}
+.player .bars i{display:block;height:100%;width:0;background:#fff}
+.player .phead{position:absolute;top:24px;left:14px;right:14px;display:flex;align-items:center;gap:10px;z-index:3}
+.player .mono{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:62px;z-index:1;transition:transform .4s var(--ease)}
+.player.playing .mono{animation:breathe 2.4s ease-in-out infinite}
+@keyframes breathe{50%{transform:translate(-50%,-50%) scale(1.05)}}
+.player .playbtn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:4;background:none;border:none}
+.player .playbtn span{width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:transform .2s}
+.player .playbtn:hover span{transform:scale(1.06)}
+.player .cap{font-size:17px;line-height:1.4;font-weight:600;min-height:72px;letter-spacing:-.1px}
+.player .cap .w{opacity:.3;transition:opacity .2s}
+.player .cap .w.on{opacity:1}
+.wave{display:flex;gap:3px;height:20px;align-items:center;margin-bottom:10px;opacity:0;transition:opacity .3s}
+.player.playing .wave{opacity:1}
+.wave b{width:3px;background:#fff;border-radius:3px;height:4px}
+.player.playing .wave b{animation:w .9s ease-in-out infinite}
+@keyframes w{0%,100%{height:4px}50%{height:20px}}
+.reacts{display:flex;gap:8px;margin-bottom:12px}
+.react{flex:1;padding:11px 0;border-radius:14px;background:var(--card);border:1px solid var(--line);font-size:18px;cursor:pointer;transition:transform .15s var(--ease),background .2s;display:flex;align-items:center;justify-content:center;gap:6px;color:var(--t2);font-family:inherit;font-size:12.5px;font-weight:600}
+.react span{font-size:17px}
+.react.on{background:rgba(255,107,61,.14);border-color:rgba(255,107,61,.4);color:var(--t1)}
+.react:active{transform:scale(.92)}
+
+/* record */
+.cam{background:#000;border-radius:24px;aspect-ratio:9/11.5;position:relative;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:13px;overflow:hidden;margin-bottom:12px;border:1px solid var(--line)}
+.cam video{width:100%;height:100%;object-fit:cover}
+.cam .grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:33.33% 33.33%}
+.cam .silh{width:120px;height:150px;border-radius:60px 60px 40px 40px;background:radial-gradient(circle at 50% 30%,#2A2A35,#16161D);opacity:.8}
+.rec{position:absolute;top:14px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:7px;color:#fff;font-weight:600;font-size:13px;font-variant-numeric:tabular-nums;padding:6px 12px;border-radius:99px}
+.rec i{width:8px;height:8px;border-radius:50%;background:#FF3B30;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.25}}
+.cam .q{position:absolute;bottom:18px;left:18px;right:18px;color:#fff;font-size:15px;line-height:1.4;font-weight:600;text-align:center;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+.cam .prog{position:absolute;bottom:0;left:0;height:3px;background:var(--grad);transition:width 1s linear}
+.recbtn{width:76px;height:76px;border-radius:50%;border:3px solid var(--t1);background:none;display:flex;align-items:center;justify-content:center;cursor:pointer;margin:4px auto 6px;transition:transform .15s}
+.recbtn:active{transform:scale(.92)}
+.recbtn i{width:58px;height:58px;border-radius:50%;background:#FF3B30;transition:all .25s var(--ease)}
+.recbtn.on i{width:28px;height:28px;border-radius:8px}
+.reclbl{text-align:center;font-size:12px;color:var(--t3);margin-bottom:14px}
+textarea,input,select{width:100%;font-family:inherit;font-size:14px;padding:13px 14px;border:1px solid var(--line2);border-radius:14px;background:var(--bg2);color:var(--t1);resize:none;transition:border-color .2s}
+textarea::placeholder,input::placeholder{color:var(--t3)}
+textarea:focus,input:focus,select:focus{outline:none;border-color:rgba(255,107,61,.6)}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23A3A2AD' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+.chips{display:flex;gap:6px;margin:10px -18px 14px;padding:0 18px;overflow-x:auto}
+.chips::-webkit-scrollbar{height:0}
+.chip{flex-shrink:0;font-size:12.5px;font-weight:500;padding:8px 12px;border-radius:99px;background:var(--card);border:1px solid var(--line2);cursor:pointer;color:var(--t2);font-family:inherit;transition:all .2s}
+.chip.on{background:var(--t1);color:#0B0B10;border-color:var(--t1)}
+.ceo-pick{display:flex;gap:8px;overflow-x:auto;margin:0 -18px 8px;padding:0 18px 4px}
+.ceo-pick::-webkit-scrollbar{height:0}
+.ceo-opt{flex-shrink:0;width:90px;border:1px solid var(--line);border-radius:18px;padding:12px 6px;text-align:center;background:var(--card);cursor:pointer;font-family:inherit;color:var(--t1);transition:all .2s}
+.ceo-opt.on{border-color:rgba(255,107,61,.6);background:rgba(255,107,61,.08)}
+.ceo-opt .av{margin:0 auto 8px}
+.ceo-opt div{font-size:11.5px;font-weight:600;line-height:1.2}
+.small{font-size:12px;color:var(--t3);line-height:1.5}
+
+/* progress steps */
+.track{display:flex;flex-direction:column;gap:0;margin:6px 0 18px}
+.tstep{display:flex;gap:14px;position:relative;padding-bottom:20px}
+.tstep:last-child{padding-bottom:0}
+.tstep:not(:last-child)::before{content:"";position:absolute;left:11px;top:26px;bottom:2px;width:2px;background:var(--line2)}
+.tstep.done:not(:last-child)::before{background:var(--good)}
+.tdot{width:24px;height:24px;border-radius:50%;border:2px solid var(--line2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;background:var(--bg)}
+.tstep.done .tdot{background:var(--good);border-color:var(--good);color:#06150E}
+.tstep.now .tdot{border-color:var(--gold);box-shadow:0 0 0 5px rgba(245,196,107,.15)}
+.tstep.now .tdot::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold);animation:blink 1.4s infinite}
+.tstep b{font-size:14px;display:block;font-weight:600}
+.tstep span{font-size:12.5px;color:var(--t3)}
+
+/* chain */
+.chain-hero{text-align:center;padding:18px 0 6px}
+.chain-hero .num{font-family:var(--serif);font-size:84px;line-height:.9;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.chain-hero .lbl{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--t2);font-weight:600;margin-top:6px}
+.node{display:flex;gap:12px;position:relative;padding-bottom:18px}
+.node:not(:last-child)::before{content:"";position:absolute;left:20px;top:46px;bottom:2px;width:2px;background:linear-gradient(var(--line2),var(--line2))}
+.node.me:not(:last-child)::before{background:linear-gradient(var(--acc),var(--line2))}
+.node .body{flex:1;padding-top:2px}
+.node .q{font-size:13px;color:var(--t2);margin-top:4px;line-height:1.45;font-style:italic;font-family:var(--serif);font-size:15px}
+.branch{display:flex;gap:8px;margin-left:52px;margin-top:-4px}
+.branch .mini{flex:1;background:var(--bg2);border:1px dashed var(--line2);border-radius:16px;padding:12px;animation:pop .6s var(--ease) both}
+.branch .mini:nth-child(2){animation-delay:.12s}
+@keyframes pop{from{opacity:0;transform:scale(.85) translateY(-6px)}to{opacity:1;transform:none}}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 8px;text-align:center}
+.stat b{font-family:var(--serif);font-size:30px;font-weight:400;display:block;line-height:1}
+.stat span{font-size:10.5px;color:var(--t3);font-weight:600;letter-spacing:.06em;text-transform:uppercase;display:block;margin-top:6px}
+
+/* unlock */
+.unlock{position:relative;border-radius:22px;padding:18px;margin:4px 0 12px;overflow:hidden;background:#1A1512;border:1px solid rgba(245,196,107,.3)}
+.unlock::before{content:"";position:absolute;inset:0;background:radial-gradient(260px 160px at 0% 0%,rgba(245,196,107,.25),transparent 70%)}
+.unlock>*{position:relative}
+.keys{display:flex;gap:8px;margin-top:12px}
+.key{flex:1;height:46px;border-radius:14px;background:rgba(245,196,107,.1);border:1px solid rgba(245,196,107,.35);display:flex;align-items:center;justify-content:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--gold);animation:pop .6s var(--ease) both}
+.key:nth-child(2){animation-delay:.15s}
+.slot{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;margin-bottom:10px}
+.slot .lbl{font-size:11px;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.slot input,.slot select{margin-bottom:8px}
+.slot select{margin-bottom:0}
+.demo{font-size:10.5px;font-weight:600;color:var(--t3);text-align:center;margin:18px 0 10px;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.demo::before,.demo::after{content:"";flex:1;height:1px;background:var(--line)}
+.divider{height:1px;background:var(--line);margin:14px 0}
+
+/* toast + overlay */
+.toast{position:absolute;left:50%;top:56px;transform:translateX(-50%) translateY(-20px);background:rgba(28,28,38,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line2);color:var(--t1);padding:11px 16px;border-radius:16px;font-size:13px;font-weight:600;opacity:0;transition:.35s var(--ease);pointer-events:none;white-space:nowrap;z-index:30;display:flex;align-items:center;gap:8px}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.celebrate{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;background:rgba(9,9,13,.92);backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .3s}
+.celebrate.on{opacity:1;pointer-events:auto}
+.celebrate .big{font-family:var(--serif);font-size:44px;line-height:1;margin:16px 0 10px}
+.celebrate .big em{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-style:italic}
+.celebrate p{color:var(--t2);font-size:14px;line-height:1.5;margin-bottom:24px;max-width:260px}
+.celebrate .burst{width:110px;height:110px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:44px;box-shadow:0 0 60px rgba(255,61,127,.5);animation:pop .7s var(--ease) both}
+canvas#fx{position:absolute;inset:0;pointer-events:none;z-index:25}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="side">
-    <h1>Edify<br>Nomination Chain</h1>
-    <p>A clickable MVP of the go-to-market loop: get answered by a CEO, then pick who asks next.</p>
-    <ol class="steps">
+    <div class="eyebrow">Clickable MVP</div>
+    <h1>Get picked.<br>Get <em>answered.</em><br>Pick next.</h1>
+    <p>Edify's growth loop: a CEO answers your question, and you choose who asks next.</p>
+    <ol>
       <li>Open the invite from Sarah</li>
-      <li>Record your question (or upload a video)</li>
-      <li>Flip to <b>CEO mode</b> and answer it, or fast-forward</li>
-      <li>Watch your answer, share it</li>
-      <li>Nominate 2 people and see the chain grow</li>
+      <li>Record your question, or upload a video</li>
+      <li>Switch to CEO mode and answer it</li>
+      <li>Watch your answer and share it</li>
+      <li>Nominate 2 people. Watch the chain grow</li>
     </ol>
     <button class="reset" data-action="reset">↺ Reset demo</button>
   </div>
 
   <div class="phone">
+    <div class="status"><span>9:41</span><div class="island"></div><span>●●● ▮</span></div>
     <div class="top">
-      <div class="logo">edify<span>.</span></div>
-      <div class="mode" id="modeBadge">Student</div>
+      <div class="logo">edify<i>.</i></div>
+      <div class="mode" id="modeBadge"><span class="d"></span><span id="modeTxt">Student</span></div>
     </div>
     <div class="screen" id="screen"></div>
     <nav class="nav" id="nav"></nav>
     <div class="toast" id="toast"></div>
+    <div class="celebrate" id="celebrate"></div>
+    <canvas id="fx"></canvas>
   </div>
 </div>
 
 <script>
-const H = 3600*1000;
+const HR = 3600*1000;
 const CEOS = {
-  maya:   {name:'Maya Okafor',    title:'CEO, Lumen Freight',          color:'#E8553A', grad:'linear-gradient(160deg,#FF7A52,#B8322A)'},
-  daniel: {name:'Daniel Reyes',   title:'Founder, Brightside Coffee',  color:'#2E7D5B', grad:'linear-gradient(160deg,#3FAF82,#1D5A41)'},
-  priya:  {name:'Priya Natarajan',title:'CEO, Fieldnote Studio',       color:'#5B4FA0', grad:'linear-gradient(160deg,#8A7BE0,#3D3378)'},
-  marcus: {name:'Marcus Lee',     title:'Founder, Ridgeway Robotics',  color:'#1E5FA8', grad:'linear-gradient(160deg,#4C8EDB,#173F72)'},
+  maya:   {name:'Maya Okafor',    first:'Maya',   title:'CEO, Lumen Freight',          color:'#E8553A', grad:'linear-gradient(160deg,#FF8A5B 0%,#C2362B 55%,#5A1414 100%)'},
+  daniel: {name:'Daniel Reyes',   first:'Daniel', title:'Founder, Brightside Coffee',  color:'#2E9E6E', grad:'linear-gradient(160deg,#4FD19A 0%,#1D7A55 55%,#0B2E21 100%)'},
+  priya:  {name:'Priya Natarajan',first:'Priya',  title:'CEO, Fieldnote Studio',       color:'#7A6BE0', grad:'linear-gradient(160deg,#A797FF 0%,#5444B8 55%,#1C1648 100%)'},
+  marcus: {name:'Marcus Lee',     first:'Marcus', title:'Founder, Ridgeway Robotics',  color:'#3B82D6', grad:'linear-gradient(160deg,#6FB0FF 0%,#2560B0 55%,#0C2244 100%)'},
 };
-const PROMPTS = [
-  'What would you do differently at 20?',
-  'How did you get your first customer?',
-  'What skill should I build in college?',
-  'What made you almost quit?',
-];
+const PROMPTS = ['What would you do differently at 20?','How did you get your first customer?','What skill should I build in college?','What made you almost quit?'];
 const ANSWERS = {
-  maya:'Honestly? Start before you feel ready. My first customer came from a cold email I almost didn’t send. Send the email.',
+  maya:'Start before you feel ready. My first customer came from a cold email I almost didn’t send. Send the email.',
   daniel:'Work behind the counter of the business you want to build. I learned more in six months pulling shots than in any class.',
   priya:'Learn to write clearly. Every pitch, every hire, every investor update is just writing. It compounds.',
   marcus:'Pick problems you’d still care about in ten years. The hard part isn’t starting; it’s staying.',
 };
 const LIBRARY = [
-  {ceo:'daniel', asker:'Jordan M.', school:'Babson', q:'How did you price your first bag of coffee?', views:'2.1k'},
-  {ceo:'priya',  asker:'Lena O.',   school:'Wellesley', q:'What do you look for in a first hire?', views:'1.4k'},
-  {ceo:'marcus', asker:'Theo R.',   school:'Olin', q:'How do you know when to pivot?', views:'980'},
-  {ceo:'maya',   asker:'Sarah Kim', school:'Babson', q:'How did you land Lumen’s first big client?', views:'3.3k'},
+  {ceo:'maya',   asker:'Sarah Kim', school:'Babson', q:'How did you land your first big client?', views:'3.3k', ago:'2h'},
+  {ceo:'daniel', asker:'Jordan M.', school:'Babson', q:'How did you price your first bag of coffee?', views:'2.1k', ago:'5h'},
+  {ceo:'priya',  asker:'Lena O.',   school:'Wellesley', q:'What do you look for in a first hire?', views:'1.4k', ago:'1d'},
+  {ceo:'marcus', asker:'Theo R.',   school:'Olin', q:'How do you know when to pivot?', views:'980', ago:'1d'},
+];
+const TICKS = [
+  '<b>Priya Shah</b> was just nominated by <b>Alex P.</b>',
+  '<b>Maya Okafor</b> answered <b>Jordan M.</b> · 2m',
+  '<b>14 students</b> are recording questions right now',
+  '<b>The Maya chain</b> just hit 23 people',
+  '<b>Marcus Lee</b> opened 3 new spots this week',
 ];
 
 let S;
 function fresh(){
   return {
-    tab:'watch', screen:'home', mode:'student',
-    invite:{from:'Sarah Kim', school:'Babson ’28', note:'You always ask the best questions in class. Your turn.', ceo:'maya', expires:Date.now()+47*H+59*60000},
+    tab:'watch', screen:'home', mode:'student', libI:0,
+    invite:{from:'Sarah Kim', school:'Babson ’28', note:'You always ask the best questions in class. Your turn.', ceo:'maya', expires:Date.now()+47*HR+59*60000},
     q:{ceo:'maya', text:'', video:null, status:'none', answer:null},
-    recording:false, recSec:0, recTimer:null,
+    recording:false, recSec:0, recTimer:null, reacts:{},
     noms:[{name:'',school:'',ceo:'same'},{name:'',school:'',ceo:'same'}],
     chain:[
-      {name:'Alex Park',  school:'Babson ’27', status:'answered', q:'What did your first warehouse look like?'},
-      {name:'Sarah Kim',  school:'Babson ’28', status:'answered', q:'How did you land Lumen’s first big client?'},
+      {name:'Alex Park', school:'Babson ’27', q:'What did your first warehouse look like?'},
+      {name:'Sarah Kim', school:'Babson ’28', q:'How did you land your first big client?'},
     ],
-    nominated:false,
+    nominated:false, seen:{},
   };
 }
 S = fresh();
@@ -212,250 +328,287 @@ const $ = s => document.querySelector(s);
 const ini = n => n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
 const esc = s => String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const av = (name,color,cls='') => `<div class="av ${cls}" style="background:${color}">${ini(name)}</div>`;
-function cd(ms){ if(ms<=0) return 'Expired'; const h=Math.floor(ms/H), m=Math.floor(ms%H/60000), s=Math.floor(ms%60000/1000); return `${h}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`; }
-function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('on'); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove('on'),2200); }
+function hms(ms){ ms=Math.max(0,ms); const h=Math.floor(ms/HR), m=Math.floor(ms%HR/60000), s=Math.floor(ms%60000/1000); return {h,m,s}; }
+function cdText(ms){ const {h,m,s}=hms(ms); return `${h}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`; }
+function ring(ms,total,col='url(#rg)'){
+  const r=23, c=2*Math.PI*r, p=Math.max(0,Math.min(1,ms/total)), {h}=hms(ms);
+  return `<div class="cring"><svg width="54" height="54"><defs><linearGradient id="rg" x1="0" x2="1"><stop offset="0" stop-color="#FF8A3D"/><stop offset="1" stop-color="#FF3D7F"/></linearGradient></defs><circle cx="27" cy="27" r="${r}" stroke="rgba(255,255,255,.12)" stroke-width="4" fill="none"/><circle data-ring cx="27" cy="27" r="${r}" stroke="${col}" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-p)}"/></svg><div class="v"><span data-ringh>${h}h</span><small>LEFT</small></div></div>`;
+}
+function toast(t,icon='✓'){ const el=$('#toast'); el.innerHTML=`<span>${icon}</span>${t}`; el.classList.add('on'); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove('on'),2200); }
 
 const ICON = {
-  watch:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9l5 3-5 3z" fill="currentColor"/></svg>',
-  chain:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 14a4 4 0 0 0 5.6 0l3-3a4 4 0 0 0-5.6-5.6l-1 1"/><path d="M14 10a4 4 0 0 0-5.6 0l-3 3a4 4 0 0 0 5.6 5.6l1-1"/></svg>',
-  me:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>',
-  ceo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16v12H4z"/><path d="M9 7V5h6v2"/></svg>',
-  lock:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
-  play:'<svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>',
+  watch:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
+  chain:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M7.5 8l3.3 7.6M16.5 8l-3.3 7.6"/></svg>',
+  me:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>',
+  ceo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M8.5 7V5.5A1.5 1.5 0 0 1 10 4h4a1.5 1.5 0 0 1 1.5 1.5V7"/></svg>',
+  lock:'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+  play:'<svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M8 5.5v13l10.5-6.5z"/></svg>',
+  arrow:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  back:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 6l-6 6 6 6"/></svg>',
 };
+const backBtn = (to,label='Back') => `<button class="back" data-action="go" data-to="${to}">${ICON.back}${label}</button>`;
 
-/* ---------- STUDENT SCREENS ---------- */
-function inviteBanner(){
-  if(S.q.status!=='none') return '';
+/* ---------- STUDENT ---------- */
+function ticker(){ return `<div class="ticker"><span class="live"></span><div class="tk" id="tk">${TICKS[0]}</div></div>`; }
+function heroInvite(){
   const c=CEOS[S.invite.ceo];
-  return `<div class="invite" data-action="go" data-to="invite">
-    <div class="k">★ You’ve been nominated</div>
-    <div class="t">${esc(S.invite.from)} picked you to ask ${c.name} a question.</div>
-    <div class="cd" data-countdown>${cd(S.invite.expires-Date.now())} left</div>
+  return `<div class="hero" data-action="go" data-to="invite">
+    <div class="k"><span class="live" style="background:var(--gold)"></span> You've been picked</div>
+    <div class="t">${esc(S.invite.from.split(' ')[0])} chose you to ask <em>${c.name}</em> anything.</div>
+    <div class="foot"><div class="row" style="gap:-6px">${av(S.invite.from,'#2B2B3A','sm')}<span class="cta">Open your invite ${ICON.arrow}</span></div>${ring(S.invite.expires-Date.now(),48*HR)}</div>
   </div>`;
 }
-function statusBanner(){
-  if(S.q.status==='sent') return `<div class="card" data-action="go" data-to="sent" style="cursor:pointer"><div class="row"><span class="pill wait">⏳ Waiting</span><div class="meta">${CEOS[S.q.ceo].name} has your question</div></div></div>`;
-  if(S.q.status==='answered' && !S.nominated) return `<div class="invite" data-action="go" data-to="answer"><div class="k">✉ New answer</div><div class="t">${CEOS[S.q.ceo].name} answered your question.</div><div class="cd">Watch now →</div></div>`;
+function heroStatus(){
+  const c=CEOS[S.q.ceo];
+  if(S.q.status==='sent') return `<div class="card row" data-action="go" data-to="sent" style="cursor:pointer">${av(c.name,c.color,'ring')}<div style="flex:1"><div class="name">${c.first} has your question</div><div class="meta">Answers usually land within 72 hours</div></div><span class="pill wait">Waiting</span></div>`;
+  if(S.q.status==='answered' && !S.nominated) return `<div class="hero" data-action="go" data-to="answer"><div class="k"><span class="live"></span> New answer for you</div><div class="t">${c.name} <em>answered you.</em></div><div class="foot"><span class="cta">Watch now ${ICON.arrow}</span><span class="pill" style="background:rgba(245,196,107,.15);color:var(--gold)">+2 nominations</span></div></div>`;
   return '';
 }
 function scrWatch(){
-  return `${inviteBanner()}${statusBanner()}
-  <h2>Answers worth watching</h2>
-  <p class="sub">Real questions from students, answered by the CEOs they asked. Anyone can watch. Only nominees can ask.</p>
-  <div class="lib">${LIBRARY.map((x,i)=>{const c=CEOS[x.ceo];return `<div class="tile" style="background:${c.grad}" data-action="lib" data-i="${i}">
-      <div class="ti pill" style="background:rgba(0,0,0,.25);color:#fff">${x.views} views</div>
-      <div class="tq">“${esc(x.q)}”</div><div class="tm">${esc(x.asker)} → ${c.name}</div></div>`}).join('')}</div>
-  <h3>CEOs on Edify</h3>
-  ${Object.entries(CEOS).map(([k,c])=>`<div class="card row">${av(c.name,c.color)}<div style="flex:1"><div class="name">${c.name}</div><div class="meta">${c.title}</div></div><span class="pill lock">${ICON.lock} Invite only</span></div>`).join('')}`;
+  const invite = S.q.status==='none' ? heroInvite() : heroStatus();
+  return `${ticker()}${invite}
+  <h3>New answers <span class="pill hot"><span class="live"></span> Live</span></h3>
+  <div class="stories">${LIBRARY.map((x,i)=>{const c=CEOS[x.ceo];return `<div class="story ${S.seen[i]?'seen':'new'}" data-action="lib" data-i="${i}">${av(c.name,c.color,'lg ring')}<div>${c.first}</div></div>`}).join('')}</div>
+  <h3>Trending this week</h3>
+  <div class="feed">${LIBRARY.map((x,i)=>{const c=CEOS[x.ceo];return `<div class="post" style="background:${c.grad}" data-action="lib" data-i="${i}">
+      <div class="mono">${ini(c.name)}</div>
+      <div class="ptop"><span class="pill glass">▶ ${x.views}</span><span class="pill glass">${x.ago}</span></div>
+      <div class="pq">“${esc(x.q)}”</div>
+      <div class="pm">${av(c.name,'rgba(255,255,255,.2)','sm')}<span><b style="color:#fff">${c.name}</b> answered ${esc(x.asker)}</span></div></div>`}).join('')}</div>
+  <h3>Who you could ask</h3>
+  <div class="card" style="padding:4px 16px">${Object.values(CEOS).map(c=>`<div class="ceo-row">${av(c.name,c.color)}<div style="flex:1"><div class="name">${c.name}</div><div class="meta">${c.title}</div></div><span class="pill lock">${ICON.lock} Invite only</span></div>`).join('')}</div>`;
 }
 function scrLib(i){
-  const x=LIBRARY[i], c=CEOS[x.ceo];
-  return `<button class="back" data-action="go" data-to="home">← Back</button>
-  ${videoCard(x.ceo, ANSWERS[x.ceo], `Answer to ${x.asker}`)}
-  <div class="card"><div class="meta">${esc(x.asker)} · ${esc(x.school)} asked</div><div class="name" style="margin-top:4px">“${esc(x.q)}”</div></div>
-  <button class="btn ghost" disabled>${ICON.lock} Ask ${c.name.split(' ')[0]} — nomination required</button>`;
+  const x=LIBRARY[i], c=CEOS[x.ceo]; S.seen[i]=true;
+  return `${backBtn('home')}
+  ${player(x.ceo, ANSWERS[x.ceo], `Answer to ${x.asker}`, x.q)}
+  ${reacts('lib'+i)}
+  <button class="btn ghost" disabled>${ICON.lock} Ask ${c.first} — nomination required</button>
+  <p class="small" style="text-align:center;margin-top:10px">Get nominated by someone already in a chain.</p>`;
 }
 function scrInvite(){
   const c=CEOS[S.invite.ceo];
-  return `<button class="back" data-action="go" data-to="home">← Back</button>
-  <div class="card" style="text-align:center;padding:22px 16px">
-    <div class="row" style="justify-content:center;gap:-8px;margin-bottom:12px">${av(S.invite.from,'#2A2E5C')}<span style="font-size:20px">→</span>${av('You','#FF5A36')}<span style="font-size:20px">→</span>${av(c.name,c.color)}</div>
-    <h2>Your turn to ask.</h2>
-    <p class="sub" style="margin-bottom:10px">${esc(S.invite.from)} (${esc(S.invite.school)}) got an answer from ${c.name} and chose <b>you</b> to ask next.</p>
-    <div class="card" style="background:var(--bg);text-align:left;margin:0 0 12px"><div class="meta">Note from ${esc(S.invite.from.split(' ')[0])}</div><div style="font-size:14px;margin-top:4px">“${esc(S.invite.note)}”</div></div>
-    <span class="pill hot" data-countdown>${cd(S.invite.expires-Date.now())} left</span>
+  return `${backBtn('home')}
+  <div style="text-align:center;padding:6px 0 4px">
+    <div class="row" style="justify-content:center;gap:10px;margin-bottom:18px">${av(S.invite.from,'#2B2B3A')}<span style="color:var(--t3)">${ICON.arrow}</span>${av('You','#FF5A36','lg ring')}<span style="color:var(--t3)">${ICON.arrow}</span>${av(c.name,c.color)}</div>
+    <h2>Your turn<br><em>to ask.</em></h2>
+    <p class="sub">${esc(S.invite.from)} got an answer from ${c.name} and chose <b style="color:var(--t1)">you</b> to go next.</p>
   </div>
-  <div class="card row">${av(c.name,c.color)}<div style="flex:1"><div class="name">${c.name}</div><div class="meta">${c.title} · answers in ~72h</div></div></div>
-  <button class="btn primary" data-action="go" data-to="record">Record my question</button>
-  <p class="small" style="text-align:center;margin-top:10px">If you don’t ask within 48 hours, the spot goes to someone else.</p>`;
+  <div class="card"><div class="meta" style="margin-bottom:6px">A note from ${esc(S.invite.from.split(' ')[0])}</div><div style="font-family:var(--serif);font-size:20px;line-height:1.25">“${esc(S.invite.note)}”</div></div>
+  <div class="card row">${ring(S.invite.expires-Date.now(),48*HR)}<div style="flex:1"><div class="name">Your spot expires in</div><div class="meta" data-countdown>${cdText(S.invite.expires-Date.now())}</div></div></div>
+  <div class="card row">${av(c.name,c.color)}<div style="flex:1"><div class="name">${c.name}</div><div class="meta">${c.title}</div></div><span class="pill good">Answers in 72h</span></div>
+  <button class="btn primary" data-action="go" data-to="record" style="margin-top:6px">Record my question</button>
+  <p class="small" style="text-align:center;margin-top:10px">Miss the window and the spot goes to someone else.</p>`;
 }
 function scrRecord(){
   const c=CEOS[S.q.ceo];
+  const hasTake = S.q.video || S.recSec>0;
   const camInner = S.q.video
     ? `<video src="${S.q.video}" controls playsinline></video>`
-    : S.recording
-      ? `<div class="rec"><i></i> REC 0:${String(S.recSec).padStart(2,'0')} / 1:00</div><div class="q">${esc(S.q.text||'Say your question to camera…')}</div>`
-      : (S.recSec>0 ? `<div style="text-align:center;color:#fff"><div style="font-size:34px">✓</div><div style="font-weight:700;margin-top:6px">Take recorded · 0:${String(S.recSec).padStart(2,'0')}</div><div class="small" style="color:#aaa">Re-record as many times as you want</div></div>`
-      : `<div style="text-align:center"><div style="font-size:32px;margin-bottom:6px">🎥</div>Camera preview<br><span class="small">60 seconds max</span></div>`);
-  const hasTake = S.q.video || S.recSec>0;
-  return `<button class="back" data-action="go" data-to="invite">← Back</button>
-  <h2>Ask ${c.name.split(' ')[0]}</h2>
-  <p class="sub">Keep it under 60 seconds. Be specific — the best questions get the best answers.</p>
-  <div class="ceo-pick">${Object.entries(CEOS).map(([k,o])=>`<button class="ceo-opt ${k===S.q.ceo?'on':''}" data-action="ceo" data-k="${k}">${av(o.name,o.color,'sm')}<div>${o.name}</div></button>`).join('')}</div>
-  <p class="small" style="margin-bottom:12px">Nominated for ${CEOS[S.invite.ceo].name}, but you can pick any CEO.</p>
-  <textarea id="qtext" rows="3" placeholder="Type your question (shows as a caption)">${esc(S.q.text)}</textarea>
+    : `<div class="grid"></div><div class="silh"></div>
+       ${S.recording?`<div class="rec glass"><i></i>0:${String(S.recSec).padStart(2,'0')}</div>`:(S.recSec>0?`<div class="rec glass">✓ Take saved · 0:${String(S.recSec).padStart(2,'0')}</div>`:'')}
+       <div class="q">${esc(S.q.text||'Your question shows here as a caption')}</div>
+       <div class="prog" style="width:${S.recSec/60*100}%"></div>`;
+  return `${backBtn('invite')}
+  <h2>Ask ${c.first}</h2>
+  <p class="sub">Under 60 seconds. Specific questions get the best answers.</p>
+  <div class="ceo-pick">${Object.entries(CEOS).map(([k,o])=>`<button class="ceo-opt ${k===S.q.ceo?'on':''}" data-action="ceo" data-k="${k}">${av(o.name,o.color,'sm')}<div>${o.first}</div></button>`).join('')}</div>
+  <textarea id="qtext" rows="2" placeholder="Type your question…">${esc(S.q.text)}</textarea>
   <div class="chips">${PROMPTS.map(p=>`<button class="chip ${S.q.text===p?'on':''}" data-action="prompt" data-p="${esc(p)}">${esc(p)}</button>`).join('')}</div>
   <div class="cam">${camInner}</div>
-  <div class="row" style="gap:8px;margin-bottom:10px">
-    <button class="btn ${S.recording?'dark':'ghost'}" data-action="rec" style="flex:1">${S.recording?'■ Stop':(hasTake?'↻ Re-record':'● Record')}</button>
-    <label class="btn ghost" style="flex:1;cursor:pointer">↑ Upload video<input type="file" accept="video/*" id="upload" hidden></label>
-  </div>
-  <button class="btn primary" data-action="send" ${(S.q.text.trim()&&!S.recording)?'':'disabled'}>Send to ${c.name.split(' ')[0]}</button>
-  <p class="small" style="text-align:center;margin-top:8px">Demo: camera is simulated. Uploading a real video file works.</p>`;
+  <button class="recbtn ${S.recording?'on':''}" data-action="rec"><i></i></button>
+  <div class="reclbl">${S.recording?'Tap to stop':(hasTake?'Tap to re-record · unlimited retakes':'Tap to record')} · <label style="color:var(--t2);cursor:pointer;text-decoration:underline">or upload<input type="file" accept="video/*" id="upload" hidden></label></div>
+  <button class="btn primary" data-action="send" ${(S.q.text.trim()&&!S.recording)?'':'disabled'}>Send to ${c.first}</button>
+  <p class="small" style="text-align:center;margin-top:10px">Demo: the camera is simulated. Uploading a real video works.</p>`;
 }
 function scrSent(){
   const c=CEOS[S.q.ceo];
-  return `<button class="back" data-action="go" data-to="home">← Home</button>
-  <div class="confetti"><div class="big">✉</div></div>
-  <h2 style="text-align:center">Sent to ${c.name.split(' ')[0]}.</h2>
-  <p class="sub" style="text-align:center">CEOs on Edify commit to answering within 72 hours. We’ll ping you the second it lands.</p>
-  <div class="card">
-    <div class="steps-v">
-      <div class="sv done"><b>Question sent</b><span>“${esc(S.q.text)}”</span></div>
-      <div class="sv now"><b>${c.name} is recording</b><span>Answer window: 72 hours</span></div>
-      <div class="sv"><b>You unlock 2 nominations</b><span>Pick who asks next</span></div>
-    </div>
-  </div>
+  return `${backBtn('home','Home')}
+  <div style="text-align:center;padding:8px 0 4px">${av(c.name,c.color,'lg ring')}<h2 style="margin-top:14px">Sent to ${c.first}.</h2><p class="sub">You'll get a notification the moment your answer lands.</p></div>
+  <div class="card"><div class="track">
+    <div class="tstep done"><div class="tdot">✓</div><div><b>Question sent</b><span>“${esc(S.q.text)}”</span></div></div>
+    <div class="tstep now"><div class="tdot"></div><div><b>${c.first} is recording</b><span>Answer window: 72 hours</span></div></div>
+    <div class="tstep"><div class="tdot"></div><div><b>You unlock 2 nominations</b><span>Choose who asks next</span></div></div>
+  </div></div>
   <div class="demo">Demo controls</div>
-  <button class="btn dark" data-action="fastforward">⏩ Fast-forward: CEO answers</button>
-  <button class="btn ghost" style="margin-top:8px" data-action="mode" data-m="ceo">Or switch to CEO mode and answer it</button>`;
+  <button class="btn light" data-action="fastforward">⏩ Fast-forward: ${c.first} answers</button>
+  <button class="btn ghost" style="margin-top:8px" data-action="mode" data-m="ceo">Switch to CEO mode and answer it</button>`;
 }
-function videoCard(ceo, text, label){
+function player(ceo, text, label, q){
   const c=CEOS[ceo];
-  return `<div class="video" style="background:${c.grad}" data-vid>
-    <div class="who">${label}</div>
-    <div class="big-av">${ini(c.name)}</div>
-    <div class="wave">${'<b></b>'.repeat(9).replace(/<b><\/b>/g,(m,i)=>`<b style="animation-delay:${(Math.random()*0.8).toFixed(2)}s"></b>`)}</div>
-    <div class="play" data-action="play" data-text="${esc(text)}"><span>${ICON.play}</span></div>
-    <div class="cap"></div>
-    <div><div class="meta" style="color:rgba(255,255,255,.85);font-weight:600">${c.name} · ${c.title}</div><div class="bar"><i></i></div></div>
+  const words = text.split(' ').map(w=>`<span class="w">${esc(w)}</span>`).join(' ');
+  return `<div class="player" style="background:${c.grad}" data-vid>
+    <div class="bars"><span><i></i></span></div>
+    <div class="phead">${av(c.name,'rgba(255,255,255,.22)','sm')}<div style="flex:1"><div class="name" style="font-size:13px">${c.name}</div><div class="meta" style="color:rgba(255,255,255,.7)">${label}</div></div></div>
+    <div class="mono">${ini(c.name)}</div>
+    <button class="playbtn" data-action="play"><span class="glass">${ICON.play}</span></button>
+    ${q?`<div class="meta" style="color:rgba(255,255,255,.65);margin-bottom:6px">Q: ${esc(q)}</div>`:''}
+    <div class="wave">${Array.from({length:14},(_,i)=>`<b style="animation-delay:${(i*0.07%0.9).toFixed(2)}s"></b>`).join('')}</div>
+    <div class="cap">${words}</div>
   </div>`;
+}
+function reacts(key){
+  const r=S.reacts[key]||{};
+  return `<div class="reacts">${[['fire','🔥','Fire'],['bulb','💡','Learned'],['save','🔖','Save']].map(([k,e,l])=>`<button class="react ${r[k]?'on':''}" data-action="react" data-key="${key}" data-r="${k}"><span>${e}</span>${l}</button>`).join('')}</div>`;
 }
 function scrAnswer(){
   const c=CEOS[S.q.ceo];
-  return `<button class="back" data-action="go" data-to="home">← Home</button>
-  ${videoCard(S.q.ceo, S.q.answer, 'Answer for you')}
-  <div class="card"><div class="meta">You asked</div><div class="name" style="margin-top:4px">“${esc(S.q.text)}”</div></div>
+  return `${backBtn('home','Home')}
+  ${player(S.q.ceo, S.q.answer, 'Answered you', S.q.text)}
+  ${reacts('mine')}
   <button class="btn ghost" data-action="share">Copy LinkedIn post</button>
   <div class="unlock" style="margin-top:12px">
-    <div class="row"><div style="font-size:28px">🔓</div><div><div class="name">You unlocked 2 nominations</div><div class="meta" style="color:var(--ink2)">Pick who gets to ask next. They’ll have 48 hours.</div></div></div>
+    <div class="name" style="font-size:16px">You unlocked 2 nominations</div>
+    <div class="meta" style="color:var(--t2);margin-top:4px">Pick who asks next. They'll have 48 hours.</div>
+    <div class="keys"><div class="key">🔑 Nomination 1</div><div class="key">🔑 Nomination 2</div></div>
   </div>
-  <button class="btn primary" data-action="go" data-to="nominate" ${S.nominated?'disabled':''}>${S.nominated?'Nominations sent ✓':'Nominate 2 people'}</button>`;
+  <button class="btn primary" data-action="go" data-to="nominate" ${S.nominated?'disabled':''}>${S.nominated?'Nominations sent ✓':'Choose who asks next'}</button>`;
 }
 function scrNominate(){
   const c=CEOS[S.q.ceo];
   const ready = S.noms.every(n=>n.name.trim());
-  return `<button class="back" data-action="go" data-to="answer">← Back</button>
-  <h2>Who asks next?</h2>
-  <p class="sub">Pick people who’d ask a great question. Your name is attached to the invite.</p>
-  ${S.noms.map((n,i)=>`<div class="slot"><div class="lbl">Nomination ${i+1}</div>
-    <input data-nom="${i}" data-f="name" placeholder="Name" value="${esc(n.name)}">
+  return `${backBtn('answer')}
+  <h2>Who asks <em>next?</em></h2>
+  <p class="sub">Pick people who'd ask something great. Your name is on their invite.</p>
+  ${S.noms.map((n,i)=>`<div class="slot"><div class="lbl">🔑 Nomination ${i+1}</div>
+    <input data-nom="${i}" data-f="name" placeholder="Their name" value="${esc(n.name)}">
     <input data-nom="${i}" data-f="school" placeholder="School or email" value="${esc(n.school)}">
-    <select data-nom="${i}" data-f="ceo"><option value="same" ${n.ceo==='same'?'selected':''}>Ask ${c.name} (same CEO)</option>${Object.entries(CEOS).filter(([k])=>k!==S.q.ceo).map(([k,o])=>`<option value="${k}" ${n.ceo===k?'selected':''}>Ask ${o.name}</option>`).join('')}</select>
+    <select data-nom="${i}" data-f="ceo"><option value="same" ${n.ceo==='same'?'selected':''}>Ask ${c.name}</option>${Object.entries(CEOS).filter(([k])=>k!==S.q.ceo).map(([k,o])=>`<option value="${k}" ${n.ceo===k?'selected':''}>Ask ${o.name}</option>`).join('')}</select>
   </div>`).join('')}
-  <button class="btn ghost" data-action="autofill" style="margin-bottom:8px">Demo: fill with sample names</button>
-  <button class="btn primary" data-action="nominate" ${ready?'':'disabled'}>Send nominations</button>`;
+  <button class="btn ghost" data-action="autofill" style="margin-bottom:8px">Fill with sample names</button>
+  <button class="btn primary" data-action="nominate" ${ready?'':'disabled'}>Send both nominations</button>`;
 }
 function scrChain(){
   const c=CEOS[S.q.status!=='none'?S.q.ceo:S.invite.ceo];
-  const me = S.q.status==='none' ? {status:'invited'} : {status:S.q.status, q:S.q.text};
-  const nodes = S.chain.map(n=>`<div class="node">${av(n.name,'#2A2E5C')}<div class="body"><div class="row" style="gap:8px"><span class="name">${esc(n.name)}</span><span class="pill good">Answered</span></div><div class="meta">${esc(n.school)}</div><div class="q">“${esc(n.q)}”</div></div></div>`).join('');
-  const meLabel = {invited:'<span class="pill hot">Nominated</span>', sent:'<span class="pill wait">Waiting</span>', answered:'<span class="pill good">Answered</span>'}[me.status];
-  const meNode = `<div class="node me">${av('You','#FF5A36')}<div class="body"><div class="row" style="gap:8px"><span class="name">You</span>${meLabel}</div><div class="meta">Babson</div>${me.q?`<div class="q">“${esc(me.q)}”</div>`:''}</div></div>`;
-  const split = S.nominated ? `<div class="split">${S.noms.map(n=>{const tc = n.ceo==='same'?c:CEOS[n.ceo];return `<div class="mini"><div class="row" style="gap:8px">${av(n.name,'#9A9CB0','sm')}<div><div class="name" style="font-size:13px">${esc(n.name)}</div><div class="meta" style="font-size:11px">→ ${tc.name.split(' ')[0]}</div></div></div><div class="pill hot" style="margin-top:8px" data-countdown-nom>48h 00m left</div></div>`}).join('')}</div>` : '';
   const total = S.chain.length + 1 + (S.nominated?2:0);
   const answered = S.chain.length + (S.q.status==='answered'?1:0);
-  return `<h2>The ${c.name.split(' ')[0]} chain</h2>
-  <p class="sub">Every answer unlocks 2 more askers. This is how Edify grows.</p>
-  <div class="stats"><div class="stat"><b>${total}</b><span>People</span></div><div class="stat"><b>${answered}</b><span>Answers</span></div><div class="stat"><b>${S.nominated?'2.0':'—'}</b><span>Nominees / answer</span></div></div>
-  <div class="card"><div class="chain">${nodes}${meNode}</div>${split}
-  ${S.nominated?'':'<p class="small" style="margin-left:52px">Your 2 nominations appear here once you’re answered.</p>'}</div>`;
+  const meLabel = {none:'<span class="pill hot">Picked</span>', sent:'<span class="pill wait">Waiting</span>', answered:'<span class="pill good">Answered</span>'}[S.q.status];
+  const nodes = S.chain.map(n=>`<div class="node">${av(n.name,'#2B2B3A')}<div class="body"><div class="row" style="gap:8px"><span class="name">${esc(n.name)}</span><span class="pill good">Answered</span></div><div class="meta">${esc(n.school)}</div><div class="q">“${esc(n.q)}”</div></div></div>`).join('');
+  const me = `<div class="node me">${av('You','#FF5A36','ring')}<div class="body"><div class="row" style="gap:8px"><span class="name">You</span>${meLabel}</div><div class="meta">Babson</div>${S.q.text&&S.q.status!=='none'?`<div class="q">“${esc(S.q.text)}”</div>`:''}</div></div>`;
+  const branch = S.nominated ? `<div class="branch">${S.noms.map(n=>{const tc=n.ceo==='same'?c:CEOS[n.ceo];return `<div class="mini"><div class="row" style="gap:8px">${av(n.name,'#3A3A4A','sm')}<div style="min-width:0"><div class="name" style="font-size:13px">${esc(n.name)}</div><div class="meta" style="font-size:11px">asking ${tc.first}</div></div></div><div class="pill hot" style="margin-top:10px">48h to accept</div></div>`}).join('')}</div>` : `<p class="small" style="margin-left:52px">Get answered to add 2 people here.</p>`;
+  return `<div class="chain-hero"><div class="num" id="chainNum">${total}</div><div class="lbl">people in the ${c.first} chain</div></div>
+  <div class="stats"><div class="stat"><b>${answered}</b><span>Answers</span></div><div class="stat"><b>#${S.chain.length+1}</b><span>Your spot</span></div><div class="stat"><b>${S.nominated?'2.0×':'—'}</b><span>Growth</span></div></div>
+  <div class="card" style="padding:18px 16px">${nodes}${me}${branch}</div>`;
 }
 function scrMe(){
   const st = {none:'Not asked yet', sent:'Waiting for answer', answered:'Answered'}[S.q.status];
-  return `<h2>You</h2>
-  <p class="sub">Babson · nominated by ${esc(S.invite.from)}</p>
+  return `<div style="text-align:center;padding:10px 0 14px">${av('You','#FF5A36','lg ring')}<h2 style="margin-top:12px">You</h2><p class="sub" style="margin-bottom:0">Babson · picked by ${esc(S.invite.from)}</p></div>
+  <div class="stats"><div class="stat"><b>${S.q.status==='answered'?1:0}</b><span>Answers</span></div><div class="stat"><b>${S.nominated?2:0}</b><span>Nominated</span></div><div class="stat"><b>${Object.keys(S.seen).length}</b><span>Watched</span></div></div>
   <div class="card row"><div style="flex:1"><div class="meta">Your question</div><div class="name">${st}</div></div>
   ${S.q.status==='none'?'<button class="chip on" data-action="go" data-to="invite">Ask now</button>':S.q.status==='sent'?'<button class="chip" data-action="go" data-to="sent">View</button>':'<button class="chip on" data-action="go" data-to="answer">Watch</button>'}</div>
-  <div class="card row"><div style="flex:1"><div class="meta">Nominations</div><div class="name">${S.nominated?'2 sent':(S.q.status==='answered'?'2 ready to send':'Unlock by getting answered')}</div></div>
+  <div class="card row"><div style="flex:1"><div class="meta">Nominations</div><div class="name">${S.nominated?'2 sent':(S.q.status==='answered'?'2 ready to send':'Unlocks when you’re answered')}</div></div>
   ${S.q.status==='answered'&&!S.nominated?'<button class="chip on" data-action="go" data-to="nominate">Nominate</button>':''}</div>`;
 }
 
-/* ---------- CEO MODE ---------- */
+/* ---------- CEO ---------- */
 function scrCeo(){
   const c=CEOS[S.q.ceo];
-  const mine = S.q.status==='sent' ? `<div class="card"><div class="inbox-item">${av('You','#FF5A36')}<div class="body"><div class="row" style="gap:8px"><span class="name">New question</span><span class="pill hot">71h left</span></div><div class="meta">Babson · nominated by ${esc(S.invite.from)}</div><div class="q" style="font-size:14px;margin-top:6px">“${esc(S.q.text)}”</div></div></div>
-    ${S.q.video?`<video src="${S.q.video}" controls playsinline style="width:100%;border-radius:12px;margin-top:10px"></video>`:''}
+  const mine = S.q.status==='sent' ? `<div class="card">
+    <div class="row" style="align-items:flex-start">${av('You','#FF5A36','ring')}<div style="flex:1"><div class="row" style="gap:8px;justify-content:space-between"><span class="name">New question</span><span class="pill hot">71h left</span></div><div class="meta">Babson · nominated by ${esc(S.invite.from)}</div></div></div>
+    <div style="font-family:var(--serif);font-size:21px;line-height:1.2;margin:14px 0 4px">“${esc(S.q.text)}”</div>
+    ${S.q.video?`<video src="${S.q.video}" controls playsinline style="width:100%;border-radius:14px;margin-top:10px"></video>`:''}
     <div class="divider"></div>
-    <textarea id="ceoAns" rows="3" placeholder="Record your answer (type it here for the demo)">${esc(ANSWERS[S.q.ceo])}</textarea>
-    <button class="btn primary" style="margin-top:10px" data-action="ceoAnswer">● Record & send answer</button></div>` : '';
-  return `<h2>${c.name.split(' ')[0]}’s inbox</h2>
-  <p class="sub">CEOs see a short, curated queue: only nominated students, never a flood.</p>
+    <textarea id="ceoAns" rows="3" placeholder="Record your answer (type it for the demo)">${esc(ANSWERS[S.q.ceo])}</textarea>
+    <button class="btn primary" style="margin-top:10px" data-action="ceoAnswer">● Record and send answer</button></div>` : '';
+  return `<h2>${c.first}'s <em>inbox</em></h2>
+  <p class="sub">A short, curated queue. Only nominated students, never a flood.</p>
   <div class="stats"><div class="stat"><b>${S.q.status==='sent'?1:0}</b><span>Waiting</span></div><div class="stat"><b>${12+(S.q.status==='answered'?1:0)}</b><span>Answered</span></div><div class="stat"><b>18k</b><span>Views</span></div></div>
-  ${mine || `<div class="card" style="text-align:center;padding:24px"><div style="font-size:28px">☕</div><div class="name" style="margin-top:6px">Inbox zero</div><div class="meta">${S.q.status==='answered'?'You answered the latest question.':'No questions yet — switch to Student mode and send one.'}</div></div>`}
-  <button class="btn ghost" data-action="mode" data-m="student">← Back to Student mode</button>`;
+  ${mine || `<div class="card" style="text-align:center;padding:30px 16px"><div style="font-family:var(--serif);font-size:26px">Inbox zero.</div><div class="meta" style="margin-top:6px">${S.q.status==='answered'?'You answered the latest question.':'No questions yet. Switch to Student mode and send one.'}</div></div>`}
+  <button class="btn ghost" data-action="mode" data-m="student">Back to Student mode</button>`;
 }
 
 /* ---------- RENDER ---------- */
 function render(){
-  $('#modeBadge').textContent = S.mode==='ceo' ? 'CEO mode' : 'Student';
-  $('#modeBadge').style.background = S.mode==='ceo' ? 'var(--accent)' : 'var(--navy)';
+  const ceo = S.mode==='ceo';
+  $('#modeBadge').className = 'mode'+(ceo?' ceo':''); $('#modeTxt').textContent = ceo?'CEO mode':'Student';
   let html;
-  if(S.mode==='ceo') html = scrCeo();
-  else if(S.screen==='home'){
-    html = S.tab==='watch'?scrWatch():S.tab==='chain'?scrChain():scrMe();
-  } else html = ({invite:scrInvite, record:scrRecord, sent:scrSent, answer:scrAnswer, nominate:scrNominate, lib:()=>scrLib(S.libI)})[S.screen]();
-  $('#screen').innerHTML = html;
-  const tabs = [['watch','Watch','watch'],['chain','Chain','chain'],['me','You','me'],['ceo','CEO mode','ceo']];
+  if(ceo) html=scrCeo();
+  else if(S.screen==='home') html = S.tab==='watch'?scrWatch():S.tab==='chain'?scrChain():scrMe();
+  else html = ({invite:scrInvite, record:scrRecord, sent:scrSent, answer:scrAnswer, nominate:scrNominate, lib:()=>scrLib(S.libI)})[S.screen]();
+  const scr=$('#screen'); const keep = render._soft; scr.innerHTML = html; if(!keep) scr.scrollTop=0; render._soft=false;
+  const badge = (S.q.status==='answered'&&!S.nominated);
+  const tabs = [['watch','Home','watch'],['chain','Chain','chain'],['me','You','me'],['ceo','CEO','ceo']];
   $('#nav').innerHTML = tabs.map(([k,l,ic])=>{
-    const on = k==='ceo' ? S.mode==='ceo' : (S.mode==='student' && S.screen==='home' && S.tab===k);
-    return `<button class="${on?'on':''}" data-action="tab" data-t="${k}">${ICON[ic]}${l}</button>`;
+    const on = k==='ceo' ? ceo : (!ceo && S.screen==='home' && S.tab===k);
+    return `<button class="${on?'on':''}" data-action="tab" data-t="${k}">${ICON[ic]}${l}${k==='me'&&badge?'<span class="badge"></span>':''}</button>`;
   }).join('');
-  const up = $('#upload');
-  if(up) up.onchange = e => { const f=e.target.files[0]; if(!f) return; try{ S.q.video = URL.createObjectURL(f); }catch(_){} S.recSec=0; render(); toast('Video attached'); };
+  const up=$('#upload');
+  if(up) up.onchange = e => { const f=e.target.files[0]; if(!f) return; try{ S.q.video=URL.createObjectURL(f);}catch(_){} S.recSec=0; render(); toast('Video attached'); };
+}
+function celebrate(icon,title,body,btn,action){
+  const el=$('#celebrate');
+  el.innerHTML = `<div class="burst">${icon}</div><div class="big">${title}</div><p>${body}</p><button class="btn primary" style="max-width:260px" data-action="${action}">${btn}</button>`;
+  el.classList.add('on'); confetti();
 }
 
 document.addEventListener('click', e=>{
-  const el = e.target.closest('[data-action]'); if(!el) return;
-  const a = el.dataset.action;
-  const qt = $('#qtext'); if(qt) S.q.text = qt.value;
-  if(a==='go'){ S.screen = el.dataset.to; S.mode='student'; }
-  if(a==='tab'){ if(el.dataset.t==='ceo'){ S.mode='ceo'; } else { S.mode='student'; S.screen='home'; S.tab=el.dataset.t; } }
-  if(a==='mode'){ S.mode = el.dataset.m; if(S.mode==='student'){ S.screen = S.q.status==='answered'?'answer':'home'; } }
-  if(a==='lib'){ S.libI = +el.dataset.i; S.screen='lib'; }
-  if(a==='ceo'){ S.q.ceo = el.dataset.k; }
-  if(a==='prompt'){ S.q.text = el.dataset.p; }
+  const el=e.target.closest('[data-action]'); if(!el) return;
+  const a=el.dataset.action;
+  const qt=$('#qtext'); if(qt) S.q.text=qt.value;
+  if(a==='go'){ S.screen=el.dataset.to; S.mode='student'; }
+  if(a==='tab'){ if(el.dataset.t==='ceo') S.mode='ceo'; else { S.mode='student'; S.screen='home'; S.tab=el.dataset.t; } }
+  if(a==='mode'){ S.mode=el.dataset.m; if(S.mode==='student') S.screen = S.q.status==='answered'&&!S.nominated?'answer':'home'; }
+  if(a==='lib'){ S.libI=+el.dataset.i; S.screen='lib'; }
+  if(a==='ceo'){ S.q.ceo=el.dataset.k; render._soft=true; }
+  if(a==='prompt'){ S.q.text=el.dataset.p; render._soft=true; }
   if(a==='rec'){
+    render._soft=true;
     if(S.recording){ clearInterval(S.recTimer); S.recording=false; }
-    else { S.q.video=null; S.recording=true; S.recSec=0; S.recTimer=setInterval(()=>{ S.recSec++; if(S.recSec>=60){ clearInterval(S.recTimer); S.recording=false; } const qt2=$('#qtext'); if(qt2) S.q.text=qt2.value; render(); },1000); }
+    else { S.q.video=null; S.recording=true; S.recSec=0; S.recTimer=setInterval(()=>{ S.recSec++; if(S.recSec>=60){clearInterval(S.recTimer); S.recording=false;} const q2=$('#qtext'); if(q2) S.q.text=q2.value; render._soft=true; render(); },1000); }
   }
-  if(a==='send'){ if(!S.q.text.trim()) return; S.q.status='sent'; S.screen='sent'; toast('Question sent'); }
-  if(a==='fastforward'){ S.q.status='answered'; S.q.answer=ANSWERS[S.q.ceo]; S.screen='answer'; toast(CEOS[S.q.ceo].name+' answered!'); }
+  if(a==='send'){ if(!S.q.text.trim()) return; S.q.status='sent'; S.screen='sent'; toast('Question sent','✉'); }
+  if(a==='fastforward'){ S.q.status='answered'; S.q.answer=ANSWERS[S.q.ceo]; S.screen='answer'; render(); celebrate('🎬', `${CEOS[S.q.ceo].first} <em>answered.</em>`, 'Your personal answer is ready, and you just unlocked 2 nominations.', 'Watch my answer', 'closeCeleb'); return; }
   if(a==='ceoAnswer'){ const t=$('#ceoAns'); S.q.answer=(t&&t.value.trim())||ANSWERS[S.q.ceo]; S.q.status='answered'; toast('Answer sent to student'); }
+  if(a==='closeCeleb'){ $('#celebrate').classList.remove('on'); return; }
+  if(a==='closeToChain'){ $('#celebrate').classList.remove('on'); animateChain(); return; }
   if(a==='play'){ playVideo(el); return; }
+  if(a==='react'){ const k=el.dataset.key, r=el.dataset.r; S.reacts[k]=S.reacts[k]||{}; S.reacts[k][r]=!S.reacts[k][r]; el.classList.toggle('on'); if(S.reacts[k][r]) { el.animate([{transform:'scale(1)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:280}); } return; }
   if(a==='share'){
     const c=CEOS[S.q.ceo];
-    const post=`I asked ${c.name} (${c.title}) a question on Edify: "${S.q.text}"\n\nThe answer stuck with me: "${S.q.answer}"\n\nThanks to ${S.invite.from} for the nomination. I've nominated two people to ask next.`;
-    try{ navigator.clipboard.writeText(post).then(()=>toast('Post copied — paste into LinkedIn'),()=>toast('Copy blocked in this viewer')); }catch(_){ toast('Copy blocked in this viewer'); }
+    const post=`I asked ${c.name} (${c.title}) a question on Edify: "${S.q.text}"\n\nThe answer stuck with me: "${S.q.answer}"\n\nThanks to ${S.invite.from} for the nomination. I've picked two people to ask next.`;
+    try{ navigator.clipboard.writeText(post).then(()=>toast('Post copied. Paste it into LinkedIn'),()=>toast('Copy blocked in this viewer','!')); }catch(_){ toast('Copy blocked in this viewer','!'); }
     return;
   }
-  if(a==='autofill'){ S.noms=[{name:'Priya Shah',school:'Babson ’28',ceo:'same'},{name:'Marco Diaz',school:'Northeastern',ceo:'daniel'}]; }
-  if(a==='nominate'){ S.nominated=true; S.mode='student'; S.screen='home'; S.tab='chain'; toast('2 nominations sent'); }
-  if(a==='reset'){ clearInterval(S.recTimer); S=fresh(); toast('Demo reset'); }
+  if(a==='autofill'){ S.noms=[{name:'Priya Shah',school:'Babson ’28',ceo:'same'},{name:'Marco Diaz',school:'Northeastern',ceo:'daniel'}]; render._soft=true; }
+  if(a==='nominate'){ S.nominated=true; S.mode='student'; S.screen='home'; S.tab='chain'; render(); celebrate('🔗','Your chain <em>grew.</em>', `${esc(S.noms[0].name)} and ${esc(S.noms[1].name)} have 48 hours to ask. You'll see when they're answered.`, 'See my chain', 'closeToChain'); return; }
+  if(a==='reset'){ clearInterval(S.recTimer); S=fresh(); $('#celebrate').classList.remove('on'); toast('Demo reset','↺'); }
   render();
 });
 document.addEventListener('input', e=>{
   const t=e.target;
-  if(t.id==='qtext'){ S.q.text=t.value; const b=document.querySelector('[data-action="send"]'); if(b) b.disabled=!(t.value.trim()&&!S.recording); const cq=document.querySelector('.cam .q'); if(cq) cq.textContent=t.value||'Say your question to camera…'; }
+  if(t.id==='qtext'){ S.q.text=t.value; const b=document.querySelector('[data-action="send"]'); if(b) b.disabled=!(t.value.trim()&&!S.recording); const cq=document.querySelector('.cam .q'); if(cq) cq.textContent=t.value||'Your question shows here as a caption'; }
   if(t.dataset.nom!==undefined){ S.noms[+t.dataset.nom][t.dataset.f]=t.value; const b=document.querySelector('[data-action="nominate"]'); if(b) b.disabled=!S.noms.every(n=>n.name.trim()); }
 });
-document.addEventListener('change', e=>{ const t=e.target; if(t.dataset && t.dataset.nom!==undefined){ S.noms[+t.dataset.nom][t.dataset.f]=t.value; } });
+document.addEventListener('change', e=>{ const t=e.target; if(t.dataset&&t.dataset.nom!==undefined) S.noms[+t.dataset.nom][t.dataset.f]=t.value; });
 
 function playVideo(btn){
-  const v = btn.closest('[data-vid]'); const cap=v.querySelector('.cap'), bar=v.querySelector('.bar i'), wave=v.querySelector('.wave');
-  const text = btn.dataset.text; btn.style.display='none'; wave.classList.add('on');
-  const words = text.split(' '); let i=0; const dur = Math.max(5000, words.length*320);
-  const start=Date.now();
+  const v=btn.closest('[data-vid]'), bar=v.querySelector('.bars i'), ws=[...v.querySelectorAll('.cap .w')];
+  btn.style.display='none'; v.classList.add('playing'); ws.forEach(w=>w.classList.remove('on'));
+  const dur=Math.max(5000, ws.length*330), start=Date.now();
   const tick=setInterval(()=>{
     const p=Math.min(1,(Date.now()-start)/dur); bar.style.width=(p*100)+'%';
-    const n=Math.ceil(p*words.length); if(n!==i){ i=n; cap.textContent=words.slice(0,i).join(' '); }
-    if(p>=1 || !document.body.contains(v)){ clearInterval(tick); wave.classList.remove('on'); btn.style.display='flex'; btn.querySelector('span').innerHTML='↻'; }
-  },60);
+    const n=Math.ceil(p*ws.length); ws.forEach((w,i)=>w.classList.toggle('on',i<n));
+    if(p>=1||!document.body.contains(v)){ clearInterval(tick); v.classList.remove('playing'); btn.style.display='flex'; btn.querySelector('span').innerHTML='<span style="font-size:24px">↻</span>'; }
+  },50);
+}
+function animateChain(){
+  const el=$('#chainNum'); if(!el) return; const to=+el.textContent, from=to-2; let i=from;
+  el.textContent=from; const t=setInterval(()=>{ i++; el.textContent=i; el.animate([{transform:'scale(1)'},{transform:'scale(1.15)'},{transform:'scale(1)'}],{duration:300}); if(i>=to) clearInterval(t); },380);
+}
+function confetti(){
+  const cv=$('#fx'), ph=cv.parentElement; cv.width=ph.clientWidth; cv.height=ph.clientHeight; const ctx=cv.getContext('2d');
+  const cols=['#FF8A3D','#FF3D7F','#F5C46B','#F5F3EE','#3DD68C'];
+  const ps=Array.from({length:90},()=>({x:cv.width/2,y:cv.height*0.38,vx:(Math.random()-.5)*9,vy:-Math.random()*9-3,s:Math.random()*6+3,c:cols[Math.floor(Math.random()*cols.length)],r:Math.random()*6,vr:(Math.random()-.5)*.3}));
+  let f=0; (function draw(){ ctx.clearRect(0,0,cv.width,cv.height); ps.forEach(p=>{p.vy+=.22;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.fillStyle=p.c;ctx.globalAlpha=Math.max(0,1-f/110);ctx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);ctx.restore();}); if(++f<110) requestAnimationFrame(draw); else ctx.clearRect(0,0,cv.width,cv.height); })();
 }
 
+let ti=0;
+setInterval(()=>{ const tk=$('#tk'); if(!tk) return; tk.classList.add('out'); setTimeout(()=>{ ti=(ti+1)%TICKS.length; tk.innerHTML=TICKS[ti]; tk.classList.remove('out'); },350); },3200);
 setInterval(()=>{
-  document.querySelectorAll('[data-countdown]').forEach(el=>{ el.textContent = cd(S.invite.expires-Date.now())+' left'; });
+  const ms=S.invite.expires-Date.now(), r=23, c=2*Math.PI*r;
+  document.querySelectorAll('[data-countdown]').forEach(el=>el.textContent=cdText(ms));
+  document.querySelectorAll('[data-ring]').forEach(el=>el.setAttribute('stroke-dashoffset', c*(1-Math.max(0,ms/(48*HR)))));
+  document.querySelectorAll('[data-ringh]').forEach(el=>el.textContent=hms(ms).h+'h');
 },1000);
 
 render();
